@@ -1,0 +1,107 @@
+{
+  "batch_id": 2,
+  "group_number": 2,
+  "batch_number": 1,
+  "n_rows": 94551,
+  "n_rows_raw": 94551,
+  "schema": {
+    "ok": true,
+    "missing": [],
+    "missing_required": [],
+    "extra_ignored": [],
+    "type_issues": {}
+  },
+  "quality": {
+    "ok": true,
+    "n_rows": 94551,
+    "null_pct": {
+      "bed": 0.0,
+      "bath": 0.0,
+      "city": 0.0,
+      "price": 0.0,
+      "state": 0.0,
+      "status": 0.0,
+      "street": 0.0,
+      "acre_lot": 0.0,
+      "zip_code": 0.0,
+      "house_size": 0.0,
+      "brokered_by": 0.0,
+      "prev_sold_date": 0.0
+    },
+    "duplicados": 0,
+    "target_invalido": 19,
+    "target_invalido_pct": 0.02,
+    "rangos_invalidos": {
+      "bed_negativo": 0,
+      "bath_negativo": 0,
+      "acre_lot_negativo": 0,
+      "house_size_no_positivo": 0
+    },
+    "outliers_log_precio_iqr3": 262
+  },
+  "new_categories": {
+    "status": {
+      "n_nuevas": 0,
+      "filas_con_nuevas_pct": 0.0,
+      "ejemplos": {}
+    },
+    "state": {
+      "n_nuevas": 1,
+      "filas_con_nuevas_pct": 0.0,
+      "ejemplos": {
+        "Puerto Rico": 1
+      }
+    },
+    "city": {
+      "n_nuevas": 2401,
+      "filas_con_nuevas_pct": 5.21,
+      "ejemplos": {
+        "The Villages": 40,
+        "Lake Havasu City": 29,
+        "Jensen Beach": 27,
+        "Waianae": 26,
+        "Bonita Springs": 23
+      }
+    }
+  },
+  "drift": {
+    "referencia": true,
+    "columnas": {
+      "price": {
+        "psi": 0.3371,
+        "ks_stat": 0.2507,
+        "mediana_ref": 234900.0,
+        "mediana_lote": 179900.0
+      },
+      "house_size": {
+        "psi": 12.4843,
+        "ks_stat": 1.0,
+        "mediana_ref": 1837.0,
+        "mediana_lote": 1168.0
+      },
+      "acre_lot": {
+        "psi": 0.1301,
+        "ks_stat": 0.16,
+        "mediana_ref": 0.23,
+        "mediana_lote": 0.18
+      },
+      "bed": {
+        "psi": 1.1151,
+        "ks_stat": 0.3151,
+        "mediana_ref": 3.0,
+        "mediana_lote": 3.0
+      },
+      "bath": {
+        "psi": 1.0632,
+        "ks_stat": 0.3507,
+        "mediana_ref": 2.0,
+        "mediana_lote": 2.0
+      }
+    }
+  },
+  "n_rows_clean": 94383,
+  "n_total_clean_before": 73626,
+  "n_total_clean_after": 168009,
+  "volume_increase_pct": 128.19,
+  "status": "valido"
+}

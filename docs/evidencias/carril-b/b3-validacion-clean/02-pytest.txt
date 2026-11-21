@@ -1,0 +1,22 @@
+============================= test session starts ==============================
+platform linux -- Python 3.9.25, pytest-8.4.2, pluggy-1.6.0 -- /home/estudiante/mlops-proyecto-final/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/estudiante/mlops-proyecto-final
+plugins: requests-mock-1.12.1
+collecting ... collected 13 items
+
+airflow/tests/test_api_client.py::test_lote_correcto PASSED              [  7%]
+airflow/tests/test_api_client.py::test_reintenta_un_500_y_luego_funciona PASSED [ 15%]
+airflow/tests/test_api_client.py::test_timeout_persistente_falla_tras_3_intentos PASSED [ 23%]
+airflow/tests/test_api_client.py::test_fin_de_datos_no_reintenta PASSED  [ 30%]
+airflow/tests/test_api_client.py::test_otro_400_es_error_real PASSED     [ 38%]
+airflow/tests/test_api_client.py::test_lote_vacio PASSED                 [ 46%]
+airflow/tests/test_api_client.py::test_respuesta_no_json PASSED          [ 53%]
+airflow/tests/test_validation.py::test_columna_extra_se_ignora_y_faltante_se_reporta PASSED [ 61%]
+airflow/tests/test_validation.py::test_falta_columna_requerida_invalida_el_lote PASSED [ 69%]
+airflow/tests/test_validation.py::test_precio_invalido_se_cuenta PASSED  [ 76%]
+airflow/tests/test_validation.py::test_detecta_categoria_nueva PASSED    [ 84%]
+airflow/tests/test_validation.py::test_psi_detecta_cambio_de_distribucion PASSED [ 92%]
+airflow/tests/test_validation.py::test_preprocess_limpia_y_conserva_trazabilidad PASSED [100%]
+
+============================== 13 passed in 1.15s ==============================

@@ -1,0 +1,82 @@
+{
+  "batch_id": 1,
+  "group_number": 2,
+  "batch_number": 0,
+  "n_rows": 73784,
+  "n_rows_raw": 73784,
+  "schema": {
+    "ok": true,
+    "missing": [],
+    "missing_required": [],
+    "extra_ignored": [],
+    "type_issues": {}
+  },
+  "quality": {
+    "ok": true,
+    "n_rows": 73784,
+    "null_pct": {
+      "bed": 0.0,
+      "bath": 0.0,
+      "city": 0.0,
+      "price": 0.0,
+      "state": 0.0,
+      "status": 0.0,
+      "street": 0.0,
+      "acre_lot": 0.0,
+      "zip_code": 0.0,
+      "house_size": 0.0,
+      "brokered_by": 0.0,
+      "prev_sold_date": 0.0
+    },
+    "duplicados": 0,
+    "target_invalido": 35,
+    "target_invalido_pct": 0.05,
+    "rangos_invalidos": {
+      "bed_negativo": 0,
+      "bath_negativo": 0,
+      "acre_lot_negativo": 0,
+      "house_size_no_positivo": 0
+    },
+    "outliers_log_precio_iqr3": 755
+  },
+  "new_categories": {
+    "status": {
+      "n_nuevas": 1,
+      "filas_con_nuevas_pct": 100.0,
+      "ejemplos": {
+        "for_sale": 73626
+      }
+    },
+    "state": {
+      "n_nuevas": 50,
+      "filas_con_nuevas_pct": 100.0,
+      "ejemplos": {
+        "Texas": 7642,
+        "Ohio": 6229,
+        "Pennsylvania": 4370,
+        "Georgia": 4245,
+        "Illinois": 4214
+      }
+    },
+    "city": {
+      "n_nuevas": 7746,
+      "filas_con_nuevas_pct": 100.0,
+      "ejemplos": {
+        "Houston": 1112,
+        "Cleveland": 732,
+        "San Antonio": 644,
+        "Indianapolis": 592,
+        "Chicago": 457
+      }
+    }
+  },
+  "drift": {
+    "referencia": false,
+    "columnas": {}
+  },
+  "n_rows_clean": 73626,
+  "n_total_clean_before": 0,
+  "n_total_clean_after": 73626,
+  "volume_increase_pct": null,
+  "status": "valido"
+}

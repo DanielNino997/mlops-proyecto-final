@@ -1,0 +1,7 @@
+WARNING Lote 0 del grupo 2 ya estaba guardado (batch_id=1): no se reinserta
+WARNING Lote 1 del grupo 2 ya estaba guardado (batch_id=2): no se reinserta
+WARNING Lote 2 del grupo 2 ya estaba guardado (batch_id=3): no se reinserta
+INFO Lote 3 del grupo 2 guardado en RAW: batch_id=8, 4055 filas
+INFO Lote 4 del grupo 2 guardado en RAW: batch_id=9, 320696 filas
+INFO Lote 5 del grupo 2 guardado en RAW: batch_id=10, 361457 filas
+Fin de datos: Ya se recolectó toda la información minima necesaria

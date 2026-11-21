@@ -1,0 +1,16 @@
+/home/estudiante/mlops-proyecto-final/scripts/../airflow/dags/lib/batch_processing.py:48: UserWarning: pandas only supports SQLAlchemy connectable (engine/connection) or database string URI or sqlite3 DBAPI2 connection. Other DBAPI2 objects are not tested. Please consider using SQLAlchemy.
+  return pd.read_sql(
+/home/estudiante/mlops-proyecto-final/scripts/../airflow/dags/lib/batch_processing.py:48: UserWarning: pandas only supports SQLAlchemy connectable (engine/connection) or database string URI or sqlite3 DBAPI2 connection. Other DBAPI2 objects are not tested. Please consider using SQLAlchemy.
+  return pd.read_sql(
+/home/estudiante/mlops-proyecto-final/scripts/../airflow/dags/lib/batch_processing.py:48: UserWarning: pandas only supports SQLAlchemy connectable (engine/connection) or database string URI or sqlite3 DBAPI2 connection. Other DBAPI2 objects are not tested. Please consider using SQLAlchemy.
+  return pd.read_sql(
+/home/estudiante/mlops-proyecto-final/scripts/../airflow/dags/lib/batch_processing.py:48: UserWarning: pandas only supports SQLAlchemy connectable (engine/connection) or database string URI or sqlite3 DBAPI2 connection. Other DBAPI2 objects are not tested. Please consider using SQLAlchemy.
+  return pd.read_sql(
+/home/estudiante/mlops-proyecto-final/scripts/../airflow/dags/lib/batch_processing.py:48: UserWarning: pandas only supports SQLAlchemy connectable (engine/connection) or database string URI or sqlite3 DBAPI2 connection. Other DBAPI2 objects are not tested. Please consider using SQLAlchemy.
+  return pd.read_sql(
+batch 0 | raw   73784 -> clean   73626 | +vol None% | target inválido 0.05% | estados nuevos 50 (100.0% filas) | ciudades nuevas 100.0% filas | PSI máx None=None
+batch 1 | raw   94551 -> clean   94383 | +vol 128.19% | target inválido 0.02% | estados nuevos 1 (0.0% filas) | ciudades nuevas 5.21% filas | PSI máx house_size=12.4843
+batch 2 | raw  230366 -> clean  230013 | +vol 136.91% | target inválido 0.03% | estados nuevos 1 (0.0% filas) | ciudades nuevas 2.35% filas | PSI máx acre_lot=0.0044
+batch 3 | raw    4055 -> clean    4054 | +vol 1.02% | target inválido 0.0% | estados nuevos 1 (100.0% filas) | ciudades nuevas 27.08% filas | PSI máx price=0.4084
+batch 4 | raw  320696 -> clean  320351 | +vol 79.67% | target inválido 0.0% | estados nuevos 0 (0.0% filas) | ciudades nuevas 2.17% filas | PSI máx price=12.1915
+batch 5 | raw  361457 -> clean  361278 | +vol 50.01% | target inválido 0.0% | estados nuevos 0 (0.0% filas) | ciudades nuevas 3.93% filas | PSI máx price=12.3367

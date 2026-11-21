@@ -1,0 +1,109 @@
+{
+  "batch_id": 3,
+  "group_number": 2,
+  "batch_number": 2,
+  "n_rows": 230366,
+  "n_rows_raw": 230366,
+  "schema": {
+    "ok": true,
+    "missing": [],
+    "missing_required": [],
+    "extra_ignored": [],
+    "type_issues": {}
+  },
+  "quality": {
+    "ok": true,
+    "n_rows": 230366,
+    "null_pct": {
+      "bed": 0.0,
+      "bath": 0.0,
+      "city": 0.0,
+      "price": 0.0,
+      "state": 0.0,
+      "status": 0.0,
+      "street": 0.0,
+      "acre_lot": 0.0,
+      "zip_code": 0.0,
+      "house_size": 0.0,
+      "brokered_by": 0.0,
+      "prev_sold_date": 0.0
+    },
+    "duplicados": 0,
+    "target_invalido": 58,
+    "target_invalido_pct": 0.03,
+    "rangos_invalidos": {
+      "bed_negativo": 0,
+      "bath_negativo": 0,
+      "acre_lot_negativo": 0,
+      "house_size_no_positivo": 0
+    },
+    "outliers_log_precio_iqr3": 1358
+  },
+  "new_categories": {
+    "status": {
+      "n_nuevas": 1,
+      "filas_con_nuevas_pct": 100.0,
+      "ejemplos": {
+        "sold": 230013
+      }
+    },
+    "state": {
+      "n_nuevas": 1,
+      "filas_con_nuevas_pct": 0.0,
+      "ejemplos": {
+        "Virgin Islands": 1
+      }
+    },
+    "city": {
+      "n_nuevas": 2125,
+      "filas_con_nuevas_pct": 2.35,
+      "ejemplos": {
+        "Hobbs": 75,
+        "Hays": 74,
+        "Aztec": 56,
+        "Chanute": 53,
+        "Pontotoc": 46
+      }
+    }
+  },
+  "drift": {
+    "referencia": true,
+    "columnas": {
+      "price": {
+        "psi": 0.0007,
+        "ks_stat": 0.007,
+        "mediana_ref": 200000.0,
+        "mediana_lote": 200000.0
+      },
+      "house_size": {
+        "psi": 0.0017,
+        "ks_stat": 0.0121,
+        "mediana_ref": 1420.0,
+        "mediana_lote": 1417.0
+      },
+      "acre_lot": {
+        "psi": 0.0044,
+        "ks_stat": 0.02,
+        "mediana_ref": 0.2,
+        "mediana_lote": 0.19
+      },
+      "bed": {
+        "psi": 0.0023,
+        "ks_stat": 0.0171,
+        "mediana_ref": 3.0,
+        "mediana_lote": 3.0
+      },
+      "bath": {
+        "psi": 0.0013,
+        "ks_stat": 0.0156,
+        "mediana_ref": 2.0,
+        "mediana_lote": 2.0
+      }
+    }
+  },
+  "n_rows_clean": 230013,
+  "n_total_clean_before": 168009,
+  "n_total_clean_after": 398022,
+  "volume_increase_pct": 136.91,
+  "status": "valido"
+}

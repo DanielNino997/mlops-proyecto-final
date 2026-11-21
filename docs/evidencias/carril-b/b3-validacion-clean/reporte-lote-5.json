@@ -1,0 +1,105 @@
+{
+  "batch_id": 10,
+  "group_number": 2,
+  "batch_number": 5,
+  "n_rows": 361457,
+  "n_rows_raw": 361457,
+  "schema": {
+    "ok": true,
+    "missing": [],
+    "missing_required": [],
+    "extra_ignored": [],
+    "type_issues": {}
+  },
+  "quality": {
+    "ok": true,
+    "n_rows": 361457,
+    "null_pct": {
+      "bed": 0.0,
+      "bath": 0.0,
+      "city": 0.0,
+      "price": 0.0,
+      "state": 0.0,
+      "status": 0.0,
+      "street": 0.0,
+      "acre_lot": 0.0,
+      "zip_code": 0.0,
+      "house_size": 0.0,
+      "brokered_by": 0.0,
+      "prev_sold_date": 0.0
+    },
+    "duplicados": 0,
+    "target_invalido": 7,
+    "target_invalido_pct": 0.0,
+    "rangos_invalidos": {
+      "bed_negativo": 0,
+      "bath_negativo": 0,
+      "acre_lot_negativo": 0,
+      "house_size_no_positivo": 0
+    },
+    "outliers_log_precio_iqr3": 3099
+  },
+  "new_categories": {
+    "status": {
+      "n_nuevas": 0,
+      "filas_con_nuevas_pct": 0.0,
+      "ejemplos": {}
+    },
+    "state": {
+      "n_nuevas": 0,
+      "filas_con_nuevas_pct": 0.0,
+      "ejemplos": {}
+    },
+    "city": {
+      "n_nuevas": 1121,
+      "filas_con_nuevas_pct": 3.93,
+      "ejemplos": {
+        "Redwood City": 389,
+        "Newport Beach": 320,
+        "Palo Alto": 273,
+        "Mountain House": 258,
+        "Malibu": 236
+      }
+    }
+  },
+  "drift": {
+    "referencia": true,
+    "columnas": {
+      "price": {
+        "psi": 12.3367,
+        "ks_stat": 1.0,
+        "mediana_ref": 285000.0,
+        "mediana_lote": 759900.0
+      },
+      "house_size": {
+        "psi": 0.9056,
+        "ks_stat": 0.3937,
+        "mediana_ref": 1599.0,
+        "mediana_lote": 2428.0
+      },
+      "acre_lot": {
+        "psi": 0.0413,
+        "ks_stat": 0.0765,
+        "mediana_ref": 0.2,
+        "mediana_lote": 0.22
+      },
+      "bed": {
+        "psi": 0.38,
+        "ks_stat": 0.2952,
+        "mediana_ref": 3.0,
+        "mediana_lote": 4.0
+      },
+      "bath": {
+        "psi": 0.741,
+        "ks_stat": 0.4016,
+        "mediana_ref": 2.0,
+        "mediana_lote": 3.0
+      }
+    }
+  },
+  "n_rows_clean": 361278,
+  "n_total_clean_before": 722427,
+  "n_total_clean_after": 1083705,
+  "volume_increase_pct": 50.01,
+  "status": "valido"
+}

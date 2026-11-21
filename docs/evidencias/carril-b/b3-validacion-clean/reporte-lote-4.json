@@ -1,0 +1,105 @@
+{
+  "batch_id": 9,
+  "group_number": 2,
+  "batch_number": 4,
+  "n_rows": 320696,
+  "n_rows_raw": 320696,
+  "schema": {
+    "ok": true,
+    "missing": [],
+    "missing_required": [],
+    "extra_ignored": [],
+    "type_issues": {}
+  },
+  "quality": {
+    "ok": true,
+    "n_rows": 320696,
+    "null_pct": {
+      "bed": 0.0,
+      "bath": 0.0,
+      "city": 0.0,
+      "price": 0.0,
+      "state": 0.0,
+      "status": 0.0,
+      "street": 0.0,
+      "acre_lot": 0.0,
+      "zip_code": 0.0,
+      "house_size": 0.0,
+      "brokered_by": 0.0,
+      "prev_sold_date": 0.0
+    },
+    "duplicados": 0,
+    "target_invalido": 0,
+    "target_invalido_pct": 0.0,
+    "rangos_invalidos": {
+      "bed_negativo": 0,
+      "bath_negativo": 0,
+      "acre_lot_negativo": 0,
+      "house_size_no_positivo": 0
+    },
+    "outliers_log_precio_iqr3": 0
+  },
+  "new_categories": {
+    "status": {
+      "n_nuevas": 0,
+      "filas_con_nuevas_pct": 0.0,
+      "ejemplos": {}
+    },
+    "state": {
+      "n_nuevas": 0,
+      "filas_con_nuevas_pct": 0.0,
+      "ejemplos": {}
+    },
+    "city": {
+      "n_nuevas": 1607,
+      "filas_con_nuevas_pct": 2.17,
+      "ejemplos": {
+        "Laveen": 184,
+        "Kuna": 171,
+        "Reston": 118,
+        "Framingham": 85,
+        "Plumas Lake": 78
+      }
+    }
+  },
+  "drift": {
+    "referencia": true,
+    "columnas": {
+      "price": {
+        "psi": 12.1915,
+        "ks_stat": 1.0,
+        "mediana_ref": 200500.0,
+        "mediana_lote": 395000.0
+      },
+      "house_size": {
+        "psi": 0.6033,
+        "ks_stat": 0.3253,
+        "mediana_ref": 1416.0,
+        "mediana_lote": 1872.0
+      },
+      "acre_lot": {
+        "psi": 0.0102,
+        "ks_stat": 0.0397,
+        "mediana_ref": 0.2,
+        "mediana_lote": 0.21
+      },
+      "bed": {
+        "psi": 0.2315,
+        "ks_stat": 0.1965,
+        "mediana_ref": 3.0,
+        "mediana_lote": 3.0
+      },
+      "bath": {
+        "psi": 0.5882,
+        "ks_stat": 0.2928,
+        "mediana_ref": 2.0,
+        "mediana_lote": 2.0
+      }
+    }
+  },
+  "n_rows_clean": 320351,
+  "n_total_clean_before": 402076,
+  "n_total_clean_after": 722427,
+  "volume_increase_pct": 79.67,
+  "status": "valido"
+}

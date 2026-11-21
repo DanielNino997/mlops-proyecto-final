@@ -1,0 +1,107 @@
+{
+  "batch_id": 8,
+  "group_number": 2,
+  "batch_number": 3,
+  "n_rows": 4055,
+  "n_rows_raw": 4055,
+  "schema": {
+    "ok": true,
+    "missing": [],
+    "missing_required": [],
+    "extra_ignored": [],
+    "type_issues": {}
+  },
+  "quality": {
+    "ok": true,
+    "n_rows": 4055,
+    "null_pct": {
+      "bed": 0.0,
+      "bath": 0.0,
+      "city": 0.0,
+      "price": 0.0,
+      "state": 0.0,
+      "status": 0.0,
+      "street": 0.0,
+      "acre_lot": 0.0,
+      "zip_code": 0.0,
+      "house_size": 0.0,
+      "brokered_by": 0.0,
+      "prev_sold_date": 0.0
+    },
+    "duplicados": 0,
+    "target_invalido": 0,
+    "target_invalido_pct": 0.0,
+    "rangos_invalidos": {
+      "bed_negativo": 0,
+      "bath_negativo": 0,
+      "acre_lot_negativo": 0,
+      "house_size_no_positivo": 0
+    },
+    "outliers_log_precio_iqr3": 63
+  },
+  "new_categories": {
+    "status": {
+      "n_nuevas": 0,
+      "filas_con_nuevas_pct": 0.0,
+      "ejemplos": {}
+    },
+    "state": {
+      "n_nuevas": 1,
+      "filas_con_nuevas_pct": 100.0,
+      "ejemplos": {
+        "Massachusetts": 4054
+      }
+    },
+    "city": {
+      "n_nuevas": 103,
+      "filas_con_nuevas_pct": 27.08,
+      "ejemplos": {
+        "Chicopee": 172,
+        "New Bedford": 85,
+        "Agawam": 63,
+        "Southbridge": 51,
+        "East Longmeadow": 48
+      }
+    }
+  },
+  "drift": {
+    "referencia": true,
+    "columnas": {
+      "price": {
+        "psi": 0.4084,
+        "ks_stat": 0.2701,
+        "mediana_ref": 200000.0,
+        "mediana_lote": 249000.0
+      },
+      "house_size": {
+        "psi": 0.0674,
+        "ks_stat": 0.0867,
+        "mediana_ref": 1420.0,
+        "mediana_lote": 1324.0
+      },
+      "acre_lot": {
+        "psi": 0.108,
+        "ks_stat": 0.0638,
+        "mediana_ref": 0.2,
+        "mediana_lote": 0.22
+      },
+      "bed": {
+        "psi": 0.0872,
+        "ks_stat": 0.1095,
+        "mediana_ref": 3.0,
+        "mediana_lote": 3.0
+      },
+      "bath": {
+        "psi": 0.1882,
+        "ks_stat": 0.1991,
+        "mediana_ref": 2.0,
+        "mediana_lote": 2.0
+      }
+    }
+  },
+  "n_rows_clean": 4054,
+  "n_total_clean_before": 398022,
+  "n_total_clean_after": 402076,
+  "volume_increase_pct": 1.02,
+  "status": "valido"
+}
