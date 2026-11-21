@@ -1,0 +1,6 @@
+{
+    "predicted_price": 581314.59,
+    "model_name": "house-price-model",
+    "model_version": "5",
+    "latency_ms": 268.17
+}

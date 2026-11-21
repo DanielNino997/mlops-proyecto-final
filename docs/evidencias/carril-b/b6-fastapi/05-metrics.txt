@@ -1,0 +1,6 @@
+predict_requests_total{status="ok"} 1.0
+predict_requests_total{status="invalid"} 1.0
+predict_latency_seconds_count 1.0
+model_version 5.0
+model_loaded 1.0
+model_reload_total{result="ok"} 1.0

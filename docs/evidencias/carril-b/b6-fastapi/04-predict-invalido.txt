@@ -1,0 +1,2 @@
+{"detail":[{"type":"greater_than_equal","loc":["body","bed"],"msg":"Input should be greater than or equal to 0","input":-1,"ctx":{"ge":0.0}}]}
+HTTP 422

@@ -1,0 +1,7 @@
+== Antes: ~210-250 ms (TargetEncoder de sklearn) | ~75 ms (FastPredictor con Series.map)
+== Después (FastPredictor con búsqueda directa):
+{"predicted_price":581314.59,"model_name":"house-price-model","model_version":"5","latency_ms":29.41}
+{"predicted_price":581314.59,"model_name":"house-price-model","model_version":"5","latency_ms":30.56}
+{"predicted_price":581314.59,"model_name":"house-price-model","model_version":"5","latency_ms":24.82}
+{"predicted_price":581314.59,"model_name":"house-price-model","model_version":"5","latency_ms":24.59}
+{"predicted_price":581314.59,"model_name":"house-price-model","model_version":"5","latency_ms":22.48}

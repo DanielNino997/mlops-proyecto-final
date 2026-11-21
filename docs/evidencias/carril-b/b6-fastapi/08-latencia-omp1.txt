@@ -1,0 +1,5 @@
+latency_ms 239.75
+latency_ms 247.07
+latency_ms 228.67
+latency_ms 216.41
+latency_ms 222.95

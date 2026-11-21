@@ -1,0 +1,10 @@
+# Mismas versiones que Airflow: el modelo se entrena allá y se carga aquí
+numpy==2.0.2
+pandas==2.3.3
+scikit-learn==1.6.1
+scipy==1.13.1
+mlflow-skinny==2.17.2
+fastapi
+uvicorn[standard]
+prometheus-client
+psycopg2-binary

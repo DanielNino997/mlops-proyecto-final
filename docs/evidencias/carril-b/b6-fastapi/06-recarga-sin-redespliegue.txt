@@ -1,0 +1,20 @@
+== 1. Estado inicial
+{"status":"ok","model_name":"house-price-model","alias":"champion","model_version":"5","run_id":"2adc0f850b5c4f9aa531cdac5ffc1326","loaded_at":"2026-11-21T17:54:25.584899+00:00","last_error":null}
+contenedor: StartedAt=2026-11-21T17:54:21.331784816Z RestartCount=0
+
+== 2. Se mueve el alias champion a v4 (lo mismo que hace promote_model)
+MLflow: champion -> v4
+== 3. Recarga por endpoint administrativo
+{"changed":true,"previous_version":"5","model_version":"4"}
+{"status":"ok","model_name":"house-price-model","alias":"champion","model_version":"4","run_id":"27e5170fbcdd4399ad68c01649d68f17","loaded_at":"2026-11-21T17:56:38.244505+00:00","last_error":null}
+{"predicted_price":384747.66,"model_name":"house-price-model","model_version":"4","latency_ms":197.61}
+
+== 4. Se devuelve champion a v5 y NO se llama al endpoint: se espera el sondeo automático
+MLflow: champion -> v5
+{"status":"ok","model_name":"house-price-model","alias":"champion","model_version":"5","run_id":"2adc0f850b5c4f9aa531cdac5ffc1326","loaded_at":"2026-11-21T17:56:56.101055+00:00","last_error":null}
+{"predicted_price":581314.59,"model_name":"house-price-model","model_version":"5","latency_ms":239.76}
+
+== 5. El contenedor nunca se reinició ni se redesplegó
+contenedor: StartedAt=2026-11-21T17:54:21.331784816Z RestartCount=0
+model_version 5.0
+model_reload_total{result="ok"} 3.0

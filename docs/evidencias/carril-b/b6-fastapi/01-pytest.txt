@@ -1,0 +1,108 @@
+============================= test session starts ==============================
+platform linux -- Python 3.9.25, pytest-8.4.2, pluggy-1.6.0 -- /home/estudiante/mlops-proyecto-final/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/estudiante/mlops-proyecto-final
+plugins: requests-mock-1.12.1, anyio-4.12.1
+collecting ... collected 7 items
+
+services/api/tests/test_api.py::test_health_muestra_version PASSED       [ 14%]
+services/api/tests/test_api.py::test_predict_ok PASSED                   [ 28%]
+services/api/tests/test_api.py::test_predict_invalido_da_422 PASSED      [ 42%]
+services/api/tests/test_api.py::test_reload_sin_token_da_401 PASSED      [ 57%]
+services/api/tests/test_api.py::test_metricas_expuestas PASSED           [ 71%]
+services/api/tests/test_api.py::test_sin_modelo_health_503 PASSED        [ 85%]
+services/api/tests/test_api.py::test_paridad_con_el_dag PASSED           [100%]
+
+=============================== warnings summary ===============================
+.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:64
+  /home/estudiante/mlops-proyecto-final/.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:64: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    @validator("togetherai_api_key", pre=True)
+
+.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:78
+  /home/estudiante/mlops-proyecto-final/.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:78: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    @validator("cohere_api_key", pre=True)
+
+.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:86
+  /home/estudiante/mlops-proyecto-final/.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:86: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    @validator("ai21labs_api_key", pre=True)
+
+.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:95
+  /home/estudiante/mlops-proyecto-final/.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:95: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    @validator("mosaicml_api_key", pre=True)
+
+.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:125
+  /home/estudiante/mlops-proyecto-final/.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:125: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    @validator("openai_api_key", pre=True)
+
+.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:182
+  /home/estudiante/mlops-proyecto-final/.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:182: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    @validator("anthropic_api_key", pre=True)
+
+.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:190
+  /home/estudiante/mlops-proyecto-final/.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:190: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    @validator("palm_api_key", pre=True)
+
+.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:230
+  /home/estudiante/mlops-proyecto-final/.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:230: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    @validator("mistral_api_key", pre=True)
+
+.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:284
+  /home/estudiante/mlops-proyecto-final/.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:284: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    @validator("provider", pre=True)
+
+.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:311
+  /home/estudiante/mlops-proyecto-final/.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:311: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    @validator("config", pre=True)
+
+.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:351
+  /home/estudiante/mlops-proyecto-final/.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:351: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    @validator("name")
+
+.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:361
+  /home/estudiante/mlops-proyecto-final/.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:361: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    @validator("model", pre=True)
+
+.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:372
+  /home/estudiante/mlops-proyecto-final/.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:372: PydanticDeprecatedSince20: Pydantic V1 style `@root_validator` validators are deprecated. You should migrate to Pydantic V2 style `@model_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    @root_validator(skip_on_failure=True)
+
+.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:394
+  /home/estudiante/mlops-proyecto-final/.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:394: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    @validator("route_type", pre=True)
+
+.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:400
+  /home/estudiante/mlops-proyecto-final/.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:400: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    @validator("limit", pre=True)
+
+.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:450
+  /home/estudiante/mlops-proyecto-final/.venv/lib64/python3.9/site-packages/mlflow/gateway/config.py:450: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class Route(ConfigModel):
+
+services/api/tests/test_api.py::test_paridad_con_el_dag
+  /home/estudiante/mlops-proyecto-final/.venv/lib64/python3.9/site-packages/matplotlib/_fontconfig_pattern.py:64: PyparsingDeprecationWarning: 'oneOf' deprecated - use 'one_of'
+    prop = Group((name + Suppress("=") + comma_separated(value)) | oneOf(_CONSTANTS))
+
+services/api/tests/test_api.py::test_paridad_con_el_dag
+services/api/tests/test_api.py::test_paridad_con_el_dag
+services/api/tests/test_api.py::test_paridad_con_el_dag
+services/api/tests/test_api.py::test_paridad_con_el_dag
+services/api/tests/test_api.py::test_paridad_con_el_dag
+services/api/tests/test_api.py::test_paridad_con_el_dag
+  /home/estudiante/mlops-proyecto-final/.venv/lib64/python3.9/site-packages/matplotlib/_fontconfig_pattern.py:85: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+    parse = parser.parseString(pattern)
+
+services/api/tests/test_api.py::test_paridad_con_el_dag
+services/api/tests/test_api.py::test_paridad_con_el_dag
+services/api/tests/test_api.py::test_paridad_con_el_dag
+services/api/tests/test_api.py::test_paridad_con_el_dag
+services/api/tests/test_api.py::test_paridad_con_el_dag
+services/api/tests/test_api.py::test_paridad_con_el_dag
+  /home/estudiante/mlops-proyecto-final/.venv/lib64/python3.9/site-packages/matplotlib/_fontconfig_pattern.py:89: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+    parser.resetCache()
+
+services/api/tests/test_api.py::test_paridad_con_el_dag
+  /home/estudiante/mlops-proyecto-final/.venv/lib64/python3.9/site-packages/matplotlib/_mathtext.py:45: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+    ParserElement.enablePackrat()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 7 passed, 30 warnings in 3.18s ========================

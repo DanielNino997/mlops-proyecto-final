@@ -1,0 +1,9 @@
+{
+    "status": "ok",
+    "model_name": "house-price-model",
+    "alias": "champion",
+    "model_version": "5",
+    "run_id": "2adc0f850b5c4f9aa531cdac5ffc1326",
+    "loaded_at": "2026-11-21T17:54:25.584899+00:00",
+    "last_error": null
+}
