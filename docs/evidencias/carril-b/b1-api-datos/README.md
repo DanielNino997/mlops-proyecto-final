@@ -27,3 +27,14 @@ Total: 6 lotes, ~1,085 millones de filas. `price` sin nulos en ningún lote.
 - **Ciudades nuevas en todos los lotes**: el encoder debe tolerar categorías desconocidas (`handle_unknown`) (RF3).
 - **Lote 3 (4 mil filas, un solo estado)**: caso esperado de *no entrenar* por volumen insuficiente.
 - **Lotes 4 y 5 (mediana de precio x2 y x3)**: caso esperado de *entrenar* por drift en el target.
+
+## Cliente `airflow/dags/lib/api_client.py`
+- `fetch_batch()` reintenta solo errores transitorios (conexión, timeout, 5xx) con espera exponencial (2 s, 4 s).
+- El HTTP 400 de fin de datos se convierte en `NoMoreBatches` (fin normal, sin reintentos).
+- Cualquier otro problema (otro 4xx, respuesta no JSON, lote vacío, grupo equivocado) lanza `DataApiError`.
+- No valida columnas: eso es responsabilidad de `validate_schema` (B3).
+
+## Resultado
+- 04-pytest.txt: 7 pruebas en verde (éxito, 500→éxito, timeout, fin de datos, otro 4xx, vacío, no JSON).
+- 05-cliente-contra-api-local.txt: el cliente recorre los 6 lotes reales (0→5) en orden y termina en
+  `NoMoreBatches` al acabarse los datos.

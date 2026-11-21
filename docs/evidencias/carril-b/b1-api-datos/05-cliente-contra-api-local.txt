@@ -1,0 +1,7 @@
+INFO Lote 0 del grupo 2 recibido: 73784 filas
+INFO Lote 1 del grupo 2 recibido: 94551 filas
+INFO Lote 2 del grupo 2 recibido: 230366 filas
+INFO Lote 3 del grupo 2 recibido: 4055 filas
+INFO Lote 4 del grupo 2 recibido: 320696 filas
+INFO Lote 5 del grupo 2 recibido: 361457 filas
+NoMoreBatches -> fin normal: Ya se recolectó toda la información minima necesaria
