@@ -65,3 +65,9 @@ en una Serie en cada llamada. La versión final busca valor por valor solo en la
 - El workflow de GitHub Actions corre estas pruebas antes de publicar la imagen: si fallan, no se publica.
 
 **Resultado: 9 veces más rápido (~230 ms → ~25 ms) con exactamente la misma predicción.**
+
+### Evidencia en la base de datos
+`07-inference-events.txt` registra la optimización petición por petición, con el mismo input y la misma
+predicción (581.315 con v5): filas 1 y 4–9 a ~215–270 ms (sklearn), 10–14 a ~71–85 ms (FastPredictor con
+`Series.map`) y 15–19 a ~22–31 ms (búsqueda directa). También están la petición inválida (`bed` negativo,
+registrada con su error) y la predicción hecha con v4 durante la prueba de recarga (RF7/RF8).

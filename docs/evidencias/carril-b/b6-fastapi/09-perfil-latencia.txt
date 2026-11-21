@@ -1,7 +1,7 @@
 OMP_NUM_THREADS = 1 | cpus = 4
-build_features (entrada -> features)          12.22 ms
-sklearn: preprocesamiento (TargetEncoder+OH)   202.92 ms
-sklearn: HistGradientBoosting                  3.51 ms
-sklearn: predict completo                    212.37 ms
-FastPredictor: predict completo                5.66 ms
+build_features (entrada -> features)          13.50 ms
+sklearn: preprocesamiento (TargetEncoder+OH)   213.33 ms
+sklearn: HistGradientBoosting                  3.42 ms
+sklearn: predict completo                    203.91 ms
+FastPredictor: predict completo                5.64 ms
 misma predicción: True | 581314.59 vs 581314.59
