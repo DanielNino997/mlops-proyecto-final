@@ -1,0 +1,56 @@
+# Instalación mínima de Argo CD para una VM de 15 GB.
+# Se instala una vez con:
+#   helm install argocd argo/argo-cd -n argocd --create-namespace -f k8s/argocd/values.yaml
+dex:
+  enabled: false          # sin SSO: entramos con el usuario admin
+notifications:
+  enabled: false          # no usamos notificaciones
+
+configs:
+  params:
+    server.insecure: true # la UI se abre por port-forward + túnel SSH, sin TLS propio
+
+controller:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 768Mi
+
+server:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 300m
+      memory: 256Mi
+
+repoServer:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+applicationSet:
+  resources:
+    requests:
+      cpu: 25m
+      memory: 32Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+
+redis:
+  resources:
+    requests:
+      cpu: 25m
+      memory: 32Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
