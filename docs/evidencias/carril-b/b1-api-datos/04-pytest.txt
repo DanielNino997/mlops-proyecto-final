@@ -1,0 +1,16 @@
+============================= test session starts ==============================
+platform linux -- Python 3.9.25, pytest-8.4.2, pluggy-1.6.0 -- /home/estudiante/mlops-proyecto-final/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/estudiante/mlops-proyecto-final
+plugins: requests-mock-1.12.1
+collecting ... collected 7 items
+
+airflow/tests/test_api_client.py::test_lote_correcto PASSED              [ 14%]
+airflow/tests/test_api_client.py::test_reintenta_un_500_y_luego_funciona PASSED [ 28%]
+airflow/tests/test_api_client.py::test_timeout_persistente_falla_tras_3_intentos PASSED [ 42%]
+airflow/tests/test_api_client.py::test_fin_de_datos_no_reintenta PASSED  [ 57%]
+airflow/tests/test_api_client.py::test_otro_400_es_error_real PASSED     [ 71%]
+airflow/tests/test_api_client.py::test_lote_vacio PASSED                 [ 85%]
+airflow/tests/test_api_client.py::test_respuesta_no_json PASSED          [100%]
+
+============================== 7 passed in 0.07s ===============================

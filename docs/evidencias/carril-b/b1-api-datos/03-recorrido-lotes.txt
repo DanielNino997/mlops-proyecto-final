@@ -1,0 +1,9 @@
+batch  0 | filas   73784 | estados 50 (nuevos 50) | ciudades nuevas  7747 | precio mediana    234,900 | nulos price 0.0% | top estados ['Texas', 'Ohio', 'Pennsylvania']
+batch  1 | filas   94551 | estados 51 (nuevos  1) | ciudades nuevas  2400 | precio mediana    179,900 | nulos price 0.0% | top estados ['Florida', 'Pennsylvania', 'Ohio']
+batch  2 | filas  230366 | estados 50 (nuevos  1) | ciudades nuevas  2126 | precio mediana    200,000 | nulos price 0.0% | top estados ['Texas', 'Florida', 'Ohio']
+batch  3 | filas    4055 | estados  1 (nuevos  1) | ciudades nuevas   103 | precio mediana    249,000 | nulos price 0.0% | top estados ['Massachusetts']
+batch  4 | filas  320696 | estados 53 (nuevos  0) | ciudades nuevas  1606 | precio mediana    395,000 | nulos price 0.0% | top estados ['Florida', 'Texas', 'California']
+batch  5 | filas  361457 | estados 53 (nuevos  0) | ciudades nuevas  1121 | precio mediana    759,900 | nulos price 0.0% | top estados ['California', 'Florida', 'Washington']
+
+HTTP 400 -> {"detail":"Ya se recolectó toda la información minima necesaria"}
+{'ok': True, 'status': 'reset ok', 'group_number': 2}

@@ -1,0 +1,18 @@
+
+=== lote 1 ===
+group_number: 2
+batch_number: 0
+data: lista de 73784 elementos
+  primer elemento: {"brokered_by": 101640.0, "status": "for_sale", "price": 289900.0, "bed": 4.0, "bath": 2.0, "acre_lot": 0.38, "street": 1758218.0, "city": "East Windsor", "state": "Connecticut", "zip_code": 6016.0, "house_size": 1617.0, "prev_sold_date": "1999-09-30"}
+
+=== lote 2 ===
+group_number: 2
+batch_number: 1
+data: lista de 94551 elementos
+  primer elemento: {"brokered_by": 92147.0, "status": "for_sale", "price": 110000.0, "bed": 7.0, "bath": 3.0, "acre_lot": 0.09, "street": 1842706.0, "city": "Dorado", "state": "Puerto Rico", "zip_code": 949.0, "house_size": 1192.0, "prev_sold_date": "2019-06-28"}
+
+=== lote 3 ===
+group_number: 2
+batch_number: 2
+data: lista de 230366 elementos
+  primer elemento: {"brokered_by": 61711.0, "status": "sold", "price": 90000.0, "bed": 3.0, "bath": 2.0, "acre_lot": 0.08, "street": 141421.0, "city": "Aguadilla", "state": "Puerto Rico", "zip_code": 603.0, "house_size": 1421.0, "prev_sold_date": "2021-10-19"}
