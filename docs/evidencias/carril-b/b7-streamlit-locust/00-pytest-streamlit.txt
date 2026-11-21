@@ -1,0 +1,12 @@
+============================= test session starts ==============================
+platform linux -- Python 3.9.25, pytest-8.4.2, pluggy-1.6.0 -- /home/estudiante/mlops-proyecto-final/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/estudiante/mlops-proyecto-final
+plugins: requests-mock-1.12.1, anyio-4.12.1
+collecting ... collected 3 items
+
+services/streamlit/tests/test_historial.py::test_lote_promovido PASSED   [ 33%]
+services/streamlit/tests/test_historial.py::test_lote_no_entrena PASSED  [ 66%]
+services/streamlit/tests/test_historial.py::test_fin_de_datos PASSED     [100%]
+
+============================== 3 passed in 0.04s ===============================

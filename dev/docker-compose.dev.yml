@@ -106,6 +106,26 @@ services:
       ADMIN_TOKEN: ${API_ADMIN_TOKEN}
     ports: ["8001:8000"]
 
+  streamlit:
+    build: ../services/streamlit
+    image: mlops-streamlit-dev:local
+    depends_on:
+      api: { condition: service_started }
+    environment:
+      API_URL: http://api:8000
+      CLEAN_DB_URL: postgresql://${DATA_DB_USER}:${DATA_DB_PASSWORD}@postgres-data:5432/clean_data
+      MLFLOW_UI_URL: ${MLFLOW_UI_URL}
+    ports: ["8501:8501"]
+
+  locust:
+    build: ../services/locust
+    image: mlops-locust-dev:local
+    depends_on:
+      api: { condition: service_started }
+    environment:
+      LOCUST_HOST: http://api:8000
+    ports: ["8089:8089"]
+
 volumes:
   pg_data:
   pg_mlflow:

@@ -1,0 +1,36 @@
+== Métricas de la API ANTES
+predict_requests_total{status="ok"} 6.0
+predict_latency_seconds_count 6.0
+predict_latency_seconds_sum 0.18133782595396042
+
+== Locust: 30 usuarios, 5/s de arranque, 60 s
+ Container dev-postgres-data-1 Waiting 
+ Container dev-postgres-data-1 Healthy 
+ Container dev-locust-run-fb7f9d0d3679 Creating 
+ Container dev-locust-run-fb7f9d0d3679 Created 
+[2026-11-21 20:30:40,017] ec0092dc218b/INFO/locust.main: Starting Locust 2.47.0
+[2026-11-21 20:30:40,018] ec0092dc218b/INFO/locust.main: Run time limit set to 60 seconds
+[2026-11-21 20:30:40,020] ec0092dc218b/INFO/locust.runners: Ramping to 30 users at a rate of 5.00 per second
+[2026-11-21 20:30:45,026] ec0092dc218b/INFO/locust.runners: All users spawned: {"UsuarioInferencia": 30} (30 total users)
+[2026-11-21 20:31:39,574] ec0092dc218b/INFO/locust.main: --run-time limit reached, shutting down
+[2026-11-21 20:31:39,611] ec0092dc218b/INFO/locust.main: Shutting down (exit code 0)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /health                                                                          109     0(0.00%) |     31       3     406     13 |    1.83        0.00
+POST     /predict                                                                        1118     0(0.00%) |    175      23     990    120 |   18.76        0.00
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                      1227     0(0.00%) |    163       3     990    100 |   20.59        0.00
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /health                                                                                13     28     32     38     71     87    320    320    410    410    410    109
+POST     /predict                                                                              120    190    250    290    420    480    600    680    820    990    990   1118
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                            100    180    240    270    400    480    590    680    820    990    990   1227
+
+
+== Métricas de la API DESPUÉS
+predict_requests_total{status="ok"} 1124.0
+predict_latency_seconds_count 1124.0
+predict_latency_seconds_sum 158.32404515799135

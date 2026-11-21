@@ -1,0 +1,38 @@
+name: Imagen Streamlit
+
+on:
+  push:
+    branches: [main]
+    paths: ["services/streamlit/**", ".github/workflows/streamlit-image.yml"]
+  workflow_dispatch:
+
+env:
+  IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/mlops-pf-streamlit
+
+jobs:
+  build-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Pruebas de la narración del historial
+        run: |
+          pip install -q pytest -r services/streamlit/requirements.txt
+          python -m pytest services/streamlit/tests -q
+
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: services/streamlit
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:${{ github.sha }}
+            ${{ env.IMAGE }}:latest
