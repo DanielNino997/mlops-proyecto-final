@@ -103,3 +103,23 @@ def process_batch(batch_id):
     summary["volume_increase_pct"] = round(summary["n_rows_clean"] / before * 100, 2) if before else None
     summary["status"] = "valido"
     return summary
+
+
+def training_batches(upto_batch_id):
+    """Lotes válidos en CLEAN hasta el actual (inclusive) y su etiqueta legible '0-1-2'."""
+    conn = connect("CLEAN_DB_URL")
+    try:
+        with conn.cursor() as cur:
+            cur.execute("SELECT DISTINCT batch_id FROM properties_clean WHERE batch_id <= %s ORDER BY 1",
+                        (upto_batch_id,))
+            ids = [r[0] for r in cur.fetchall()]
+    finally:
+        conn.close()
+    conn = connect("RAW_DB_URL")
+    try:
+        with conn.cursor() as cur:
+            cur.execute("SELECT batch_number FROM batches WHERE id = ANY(%s) ORDER BY batch_number", (ids,))
+            labels = "-".join(str(r[0]) for r in cur.fetchall())
+    finally:
+        conn.close()
+    return ids, labels

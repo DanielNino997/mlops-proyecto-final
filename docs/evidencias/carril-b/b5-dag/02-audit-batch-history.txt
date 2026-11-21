@@ -1,0 +1,11 @@
+ lote | final_status | trained | promoted | v | dmae_pct |                                           razon                                            
+------+--------------+---------+----------+---+----------+--------------------------------------------------------------------------------------------
+    0 | promovido    | t       | t        | 1 |          | se promueve: no existía modelo productivo (línea base inicial)
+    1 | promovido    | t       | t        | 2 |    -7.63 | se promueve: MAE -7.63 % (exige <= -3.0 %), RMSE -7.20 % (exige <= +1.0 %) vs campeón v1
+    2 | promovido    | t       | t        | 3 |    -7.67 | se promueve: MAE -7.67 % (exige <= -3.0 %), RMSE -6.50 % (exige <= +1.0 %) vs campeón v2
+    3 | no_entrena   | f       |          |   |          | no entrena: lote insuficiente (+1.02 % del acumulado, mínimo 5.0 %); se observó drift en p
+    4 | promovido    | t       | t        | 4 |   -44.77 | se promueve: MAE -44.77 % (exige <= -3.0 %), RMSE -43.79 % (exige <= +1.0 %) vs campeón v3
+    5 | promovido    | t       | t        | 5 |   -51.53 | se promueve: MAE -51.53 % (exige <= -3.0 %), RMSE -42.19 % (exige <= +1.0 %) vs campeón v4
+      | sin_datos    |         |          |   |          | la API ya entregó todos los lotes: Ya se recolectó toda la información minima necesaria
+(7 rows)
+

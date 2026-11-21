@@ -69,6 +69,28 @@ services:
     image: cristiandiaz13/mlops-puj:data-api-pf-v2
     ports: ["8000:80"]
 
+  airflow:
+    build: ../airflow
+    image: mlops-airflow-dev:local
+    command: standalone
+    depends_on:
+      postgres-data: { condition: service_healthy }
+      mlflow: { condition: service_started }
+      data-api: { condition: service_started }
+    environment:
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      RAW_DB_URL: postgresql://${DATA_DB_USER}:${DATA_DB_PASSWORD}@postgres-data:5432/raw_data
+      CLEAN_DB_URL: postgresql://${DATA_DB_USER}:${DATA_DB_PASSWORD}@postgres-data:5432/clean_data
+      DATA_API_URL: http://data-api:80
+      GROUP_NUMBER: "2"
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      MODEL_NAME: house-price-model
+      STAGING_DIR: /tmp/pipeline_lotes
+      GIT_SHA: dev-local
+    volumes:
+      - ../airflow/dags:/opt/airflow/dags
+    ports: ["8080:8080"]
+
 volumes:
   pg_data:
   pg_mlflow:

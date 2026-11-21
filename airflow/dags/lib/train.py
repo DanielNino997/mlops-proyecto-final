@@ -122,18 +122,37 @@ def _save_plots(model, X_test, y_test, out_dir):
     plt.close(fig)
 
 
-def train_candidate(batch_ids, batch_labels, train_reason, extra_tags=None):
-    """Entrena con los lotes indicados, registra todo en MLflow y devuelve el candidato."""
-    df = load_clean(batch_ids)
-    train, val, test = split(df)
+def fit_and_save(batch_ids, out_dir):
+    """Tarea train_candidate_model: entrena con los lotes y guarda el modelo en disco."""
+    import joblib
+    train = split(load_clean(batch_ids))[0]
     model = build_model()
     model.fit(prepare_features(train), train["price"])
+    path = Path(out_dir) / "model.joblib"
+    joblib.dump(model, path)
+    return {"model_path": str(path), "n_train": len(train)}
 
+
+def evaluate_saved(batch_ids, model_path, out_dir):
+    """Tarea evaluate_candidate_model: métricas train/val/test y gráficos."""
+    import joblib
+    model = joblib.load(model_path)
+    train, val, test = split(load_clean(batch_ids))
     mets = {}
     for name, part in (("train", train), ("val", val), ("test", test)):
         for k, v in metrics(part["price"], model.predict(prepare_features(part))).items():
             mets[f"{name}_{k}"] = v
+    plots = Path(out_dir) / "graficos"
+    plots.mkdir(parents=True, exist_ok=True)
+    _save_plots(model, prepare_features(test), test["price"], plots)
+    return {"metrics": mets, "plots_dir": str(plots), "n_train": len(train), "n_val": len(val), "n_test": len(test)}
 
+
+def register_saved(batch_ids, batch_labels, train_reason, model_path, evaluation, extra_tags=None):
+    """Tarea register_candidate_in_mlflow: run con parámetros, métricas, gráficos y modelo registrado."""
+    import joblib
+    model = joblib.load(model_path)
+    example = prepare_features(split(load_clean(batch_ids))[2].head(5))
     mlflow.set_experiment(EXPERIMENT)
     with mlflow.start_run(run_name=f"lotes-{batch_labels}") as run:
         mlflow.set_tags({"batch_ids": ",".join(map(str, batch_ids)), "batch_numbers": batch_labels,
@@ -142,16 +161,22 @@ def train_candidate(batch_ids, batch_labels, train_reason, extra_tags=None):
                            "target_transform": "log1p", "num_cols": ",".join(NUM_COLS),
                            "target_encoded_cols": ",".join(TE_COLS), "onehot_cols": ",".join(OH_COLS),
                            "split": f"raw_row_id%100: test<{TEST_PCT}, val<{TEST_PCT + VAL_PCT}",
-                           "n_train": len(train), "n_val": len(val), "n_test": len(test)})
-        mlflow.log_metrics(mets)
-        with tempfile.TemporaryDirectory() as tmp:
-            _save_plots(model, prepare_features(test), test["price"], tmp)
-            mlflow.log_artifacts(tmp, "graficos")
-        example = prepare_features(test.head(5))
+                           "n_train": evaluation["n_train"], "n_val": evaluation["n_val"],
+                           "n_test": evaluation["n_test"]})
+        mlflow.log_metrics(evaluation["metrics"])
+        mlflow.log_artifacts(evaluation["plots_dir"], "graficos")
         mlflow.sklearn.log_model(model, "model", signature=infer_signature(example, model.predict(example)),
                                  input_example=example, registered_model_name=MODEL_NAME)
         run_id = run.info.run_id
-
     version = MlflowClient().search_model_versions(f"run_id='{run_id}'")[0].version
-    log.info("Candidato v%s registrado (run %s): test_mae=%.0f", version, run_id, mets["test_mae"])
-    return {"run_id": run_id, "version": version, "metrics": mets, "model": model, "test": test}
+    log.info("Candidato v%s registrado (run %s): test_mae=%.0f", version, run_id, evaluation["metrics"]["test_mae"])
+    return {"run_id": run_id, "version": version}
+
+
+def train_candidate(batch_ids, batch_labels, train_reason, extra_tags=None):
+    """Las tres etapas seguidas (lo usa scripts/simulate_pipeline.py)."""
+    with tempfile.TemporaryDirectory() as tmp:
+        fit = fit_and_save(batch_ids, tmp)
+        evaluation = evaluate_saved(batch_ids, fit["model_path"], tmp)
+        reg = register_saved(batch_ids, batch_labels, train_reason, fit["model_path"], evaluation, extra_tags)
+    return {**reg, "metrics": evaluation["metrics"], "batch_ids": list(batch_ids)}
