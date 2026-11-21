@@ -1,0 +1,27 @@
+============================= test session starts ==============================
+platform linux -- Python 3.9.25, pytest-8.4.2, pluggy-1.6.0 -- /home/estudiante/mlops-proyecto-final/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/estudiante/mlops-proyecto-final
+plugins: requests-mock-1.12.1
+collecting ... collected 18 items
+
+airflow/tests/test_api_client.py::test_lote_correcto PASSED              [  5%]
+airflow/tests/test_api_client.py::test_reintenta_un_500_y_luego_funciona PASSED [ 11%]
+airflow/tests/test_api_client.py::test_timeout_persistente_falla_tras_3_intentos PASSED [ 16%]
+airflow/tests/test_api_client.py::test_fin_de_datos_no_reintenta PASSED  [ 22%]
+airflow/tests/test_api_client.py::test_otro_400_es_error_real PASSED     [ 27%]
+airflow/tests/test_api_client.py::test_lote_vacio PASSED                 [ 33%]
+airflow/tests/test_api_client.py::test_respuesta_no_json PASSED          [ 38%]
+airflow/tests/test_decision.py::test_sin_campeon_entrena_linea_base PASSED [ 44%]
+airflow/tests/test_decision.py::test_lote_invalido_no_entrena PASSED     [ 50%]
+airflow/tests/test_decision.py::test_lote_pequeno_no_entrena_aunque_haya_drift PASSED [ 55%]
+airflow/tests/test_decision.py::test_drift_dispara_entrenamiento PASSED  [ 61%]
+airflow/tests/test_decision.py::test_sin_cambios_no_entrena PASSED       [ 66%]
+airflow/tests/test_validation.py::test_columna_extra_se_ignora_y_faltante_se_reporta PASSED [ 72%]
+airflow/tests/test_validation.py::test_falta_columna_requerida_invalida_el_lote PASSED [ 77%]
+airflow/tests/test_validation.py::test_precio_invalido_se_cuenta PASSED  [ 83%]
+airflow/tests/test_validation.py::test_detecta_categoria_nueva PASSED    [ 88%]
+airflow/tests/test_validation.py::test_psi_detecta_cambio_de_distribucion PASSED [ 94%]
+airflow/tests/test_validation.py::test_preprocess_limpia_y_conserva_trazabilidad PASSED [100%]
+
+============================== 18 passed in 1.25s ==============================

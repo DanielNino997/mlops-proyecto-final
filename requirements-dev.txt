@@ -1,6 +1,6 @@
 mlflow==2.17.2
 pandas
-scikit-learn
+scikit-learn==1.6.1
 scipy
 psycopg2-binary
 sqlalchemy
@@ -8,3 +8,4 @@ requests
 boto3
 pytest
 requests-mock
+matplotlib

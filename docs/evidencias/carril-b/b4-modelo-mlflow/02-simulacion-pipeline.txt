@@ -1,0 +1,39 @@
+Successfully registered model 'house-price-model'.
+Created version '1' of model 'house-price-model'.
+INFO lib.train Candidato v1 registrado (run 9b3a6a2c124b460082ace8281f785b7f): test_mae=40185
+INFO lib.promote Candidato v1: se promueve: no existía modelo productivo (línea base inicial)
+Registered model 'house-price-model' already exists. Creating a new version of this model...
+Created version '2' of model 'house-price-model'.
+INFO lib.train Candidato v2 registrado (run bd127bf7efca4af1ae56f56e0bb3cd50): test_mae=38544
+INFO lib.promote Candidato v2: se promueve: MAE -7.63 % (exige <= -3.0 %), RMSE -7.20 % (exige <= +1.0 %) vs campeón v1
+Registered model 'house-price-model' already exists. Creating a new version of this model...
+Created version '3' of model 'house-price-model'.
+INFO lib.train Candidato v3 registrado (run ab9441d70b3d4021b4d131698c84e1da): test_mae=35104
+INFO lib.promote Candidato v3: se promueve: MAE -7.67 % (exige <= -3.0 %), RMSE -6.50 % (exige <= +1.0 %) vs campeón v2
+Registered model 'house-price-model' already exists. Creating a new version of this model...
+Created version '4' of model 'house-price-model'.
+INFO lib.train Candidato v4 registrado (run 8e3c7527ffef42858e82d202a807bf7f): test_mae=46662
+INFO lib.promote Candidato v4: se promueve: MAE -44.77 % (exige <= -3.0 %), RMSE -43.79 % (exige <= +1.0 %) vs campeón v3
+Registered model 'house-price-model' already exists. Creating a new version of this model...
+Created version '5' of model 'house-price-model'.
+INFO lib.train Candidato v5 registrado (run 9fcd7cbd06d448e7869dbf29cf7dde1a): test_mae=129166
+INFO lib.promote Candidato v5: se promueve: MAE -51.53 % (exige <= -3.0 %), RMSE -42.19 % (exige <= +1.0 %) vs campeón v4
+
+### batch 0: entrena: línea base inicial, no existe modelo productivo
+    v1 MAE=40,185 -> se promueve: no existía modelo productivo (línea base inicial)
+
+### batch 1: entrena: drift en price (PSI 0.34), house_size (PSI 12.48), bed (PSI 1.12), bath (PSI 1.06); categorías nuevas en city (5.2 % filas); volumen +128.2 % del acumulado
+    v2 MAE=38,544 -> se promueve: MAE -7.63 % (exige <= -3.0 %), RMSE -7.20 % (exige <= +1.0 %) vs campeón v1
+
+### batch 2: entrena: volumen +136.9 % del acumulado
+    v3 MAE=35,104 -> se promueve: MAE -7.67 % (exige <= -3.0 %), RMSE -6.50 % (exige <= +1.0 %) vs campeón v2
+
+### batch 3: no entrena: lote insuficiente (+1.02 % del acumulado, mínimo 5.0 %); se observó drift en price (PSI 0.41) y categorías nuevas en state (100.0 % filas), city (27.1 % filas); sus datos quedan en CLEAN para el próximo entrenamiento
+
+### batch 4: entrena: drift en price (PSI 12.19), house_size (PSI 0.60), bed (PSI 0.23), bath (PSI 0.59); volumen +79.7 % del acumulado; campeón v3 degradado +316.2 % en MAE sobre el lote
+    v4 MAE=46,662 -> se promueve: MAE -44.77 % (exige <= -3.0 %), RMSE -43.79 % (exige <= +1.0 %) vs campeón v3
+
+### batch 5: entrena: drift en price (PSI 12.34), house_size (PSI 0.91), bed (PSI 0.38), bath (PSI 0.74); volumen +50.0 % del acumulado; campeón v4 degradado +1413.6 % en MAE sobre el lote
+    v5 MAE=129,166 -> se promueve: MAE -51.53 % (exige <= -3.0 %), RMSE -42.19 % (exige <= +1.0 %) vs campeón v4
+
+campeón final: v5

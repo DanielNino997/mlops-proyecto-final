@@ -34,7 +34,7 @@ def load_known_categories(exclude_batch_id):
     try:
         with conn.cursor() as cur:
             for c in CATEGORICAL:
-                cur.execute(f"SELECT DISTINCT {c} FROM properties_clean WHERE batch_id <> %s AND {c} IS NOT NULL",
+                cur.execute(f"SELECT DISTINCT {c} FROM properties_clean WHERE batch_id < %s AND {c} IS NOT NULL",
                             (exclude_batch_id,))
                 known[c] = {r[0] for r in cur.fetchall()}
     finally:
@@ -46,7 +46,7 @@ def load_reference_sample(exclude_batch_id, n=200_000):
     conn = connect("CLEAN_DB_URL")
     try:
         with conn.cursor() as cur:
-            cur.execute(f"SELECT {', '.join(DRIFT_COLS)} FROM properties_clean WHERE batch_id <> %s "
+            cur.execute(f"SELECT {', '.join(DRIFT_COLS)} FROM properties_clean WHERE batch_id < %s "
                         f"ORDER BY random() LIMIT {int(n)}", (exclude_batch_id,))
             return pd.DataFrame(cur.fetchall(), columns=DRIFT_COLS, dtype="float64")
     finally:
@@ -57,7 +57,7 @@ def count_clean(exclude_batch_id=None):
     conn = connect("CLEAN_DB_URL")
     try:
         with conn.cursor() as cur:
-            cur.execute("SELECT count(*) FROM properties_clean WHERE batch_id <> %s", (exclude_batch_id or -1,))
+            cur.execute("SELECT count(*) FROM properties_clean WHERE batch_id < %s", (exclude_batch_id or 2**31 - 1,))
             return cur.fetchone()[0]
     finally:
         conn.close()

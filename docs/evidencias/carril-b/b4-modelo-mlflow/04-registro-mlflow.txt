@@ -1,0 +1,6 @@
+alias champion -> 5
+v1 | lotes 0 | test_mae=40,185 | git 8f0de10 | promoted | se promueve: no existía modelo productivo (línea base inicial)
+v2 | lotes 0-1 | test_mae=38,544 | git 8f0de10 | promoted | se promueve: MAE -7.63 % (exige <= -3.0 %), RMSE -7.20 % (exige <= +1.0 %) vs campeón v1
+v3 | lotes 0-1-2 | test_mae=35,104 | git 8f0de10 | promoted | se promueve: MAE -7.67 % (exige <= -3.0 %), RMSE -6.50 % (exige <= +1.0 %) vs campeón v2
+v4 | lotes 0-1-2-3-4 | test_mae=46,662 | git 8f0de10 | promoted | se promueve: MAE -44.77 % (exige <= -3.0 %), RMSE -43.79 % (exige <= +1.0 %) vs campeón v3
+v5 | lotes 0-1-2-3-4-5 | test_mae=129,166 | git 8f0de10 | promoted | se promueve: MAE -51.53 % (exige <= -3.0 %), RMSE -42.19 % (exige <= +1.0 %) vs campeón v4

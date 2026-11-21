@@ -1,0 +1,118 @@
+[
+  {
+    "batch_number": 0,
+    "trained": true,
+    "train_reason": "entrena: l\u00ednea base inicial, no existe modelo productivo",
+    "degradation": null,
+    "candidate_version": "1",
+    "candidate_mae": 40185.21768694365,
+    "candidate_rmse": 50948.98384474944,
+    "champion_version": null,
+    "champion_mae": null,
+    "champion_rmse": null,
+    "delta_mae_pct": null,
+    "delta_rmse_pct": null,
+    "promoted": true,
+    "decision_reason": "se promueve: no exist\u00eda modelo productivo (l\u00ednea base inicial)",
+    "mlflow_run_id": "9b3a6a2c124b460082ace8281f785b7f"
+  },
+  {
+    "batch_number": 1,
+    "trained": true,
+    "train_reason": "entrena: drift en price (PSI 0.34), house_size (PSI 12.48), bed (PSI 1.12), bath (PSI 1.06); categor\u00edas nuevas en city (5.2 % filas); volumen +128.2 % del acumulado",
+    "degradation": {
+      "champion_version": "1",
+      "mae_lote": 43472.98,
+      "mae_registro": 40185.22,
+      "degradacion_pct": 8.18
+    },
+    "candidate_version": "2",
+    "candidate_mae": 38543.686566757635,
+    "candidate_rmse": 49162.92058783896,
+    "champion_version": "1",
+    "champion_mae": 41728.02846242496,
+    "champion_rmse": 52977.09952051368,
+    "delta_mae_pct": -7.63,
+    "delta_rmse_pct": -7.2,
+    "promoted": true,
+    "decision_reason": "se promueve: MAE -7.63 % (exige <= -3.0 %), RMSE -7.20 % (exige <= +1.0 %) vs campe\u00f3n v1",
+    "mlflow_run_id": "bd127bf7efca4af1ae56f56e0bb3cd50"
+  },
+  {
+    "batch_number": 2,
+    "trained": true,
+    "train_reason": "entrena: volumen +136.9 % del acumulado",
+    "degradation": {
+      "champion_version": "2",
+      "mae_lote": 37809.07,
+      "mae_registro": 38543.69,
+      "degradacion_pct": -1.91
+    },
+    "candidate_version": "3",
+    "candidate_mae": 35103.93966467416,
+    "candidate_rmse": 45446.45401990813,
+    "champion_version": "2",
+    "champion_mae": 38020.18219607695,
+    "champion_rmse": 48607.17173153865,
+    "delta_mae_pct": -7.67,
+    "delta_rmse_pct": -6.5,
+    "promoted": true,
+    "decision_reason": "se promueve: MAE -7.67 % (exige <= -3.0 %), RMSE -6.50 % (exige <= +1.0 %) vs campe\u00f3n v2",
+    "mlflow_run_id": "ab9441d70b3d4021b4d131698c84e1da"
+  },
+  {
+    "batch_number": 3,
+    "trained": false,
+    "train_reason": "no entrena: lote insuficiente (+1.02 % del acumulado, m\u00ednimo 5.0 %); se observ\u00f3 drift en price (PSI 0.41) y categor\u00edas nuevas en state (100.0 % filas), city (27.1 % filas); sus datos quedan en CLEAN para el pr\u00f3ximo entrenamiento",
+    "degradation": {
+      "champion_version": "3",
+      "mae_lote": 106565.65,
+      "mae_registro": 35103.94,
+      "degradacion_pct": 203.57
+    }
+  },
+  {
+    "batch_number": 4,
+    "trained": true,
+    "train_reason": "entrena: drift en price (PSI 12.19), house_size (PSI 0.60), bed (PSI 0.23), bath (PSI 0.59); volumen +79.7 % del acumulado; campe\u00f3n v3 degradado +316.2 % en MAE sobre el lote",
+    "degradation": {
+      "champion_version": "3",
+      "mae_lote": 146105.23,
+      "mae_registro": 35103.94,
+      "degradacion_pct": 316.21
+    },
+    "candidate_version": "4",
+    "candidate_mae": 46662.47568957662,
+    "candidate_rmse": 62601.38913154172,
+    "champion_version": "3",
+    "champion_mae": 84494.05515094195,
+    "champion_rmse": 111367.17590782464,
+    "delta_mae_pct": -44.77,
+    "delta_rmse_pct": -43.79,
+    "promoted": true,
+    "decision_reason": "se promueve: MAE -44.77 % (exige <= -3.0 %), RMSE -43.79 % (exige <= +1.0 %) vs campe\u00f3n v3",
+    "mlflow_run_id": "8e3c7527ffef42858e82d202a807bf7f"
+  },
+  {
+    "batch_number": 5,
+    "trained": true,
+    "train_reason": "entrena: drift en price (PSI 12.34), house_size (PSI 0.91), bed (PSI 0.38), bath (PSI 0.74); volumen +50.0 % del acumulado; campe\u00f3n v4 degradado +1413.6 % en MAE sobre el lote",
+    "degradation": {
+      "champion_version": "4",
+      "mae_lote": 706300.56,
+      "mae_registro": 46662.48,
+      "degradacion_pct": 1413.64
+    },
+    "candidate_version": "5",
+    "candidate_mae": 129165.79792508902,
+    "candidate_rmse": 616787.5892239942,
+    "champion_version": "4",
+    "champion_mae": 266502.6711870873,
+    "champion_rmse": 1066866.233686723,
+    "delta_mae_pct": -51.53,
+    "delta_rmse_pct": -42.19,
+    "promoted": true,
+    "decision_reason": "se promueve: MAE -51.53 % (exige <= -3.0 %), RMSE -42.19 % (exige <= +1.0 %) vs campe\u00f3n v4",
+    "mlflow_run_id": "9fcd7cbd06d448e7869dbf29cf7dde1a"
+  }
+]
