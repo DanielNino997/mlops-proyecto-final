@@ -31,7 +31,8 @@ def cargar_historial():
         with conn.cursor() as cur:
             cur.execute("""SELECT id, processed_at, batch_number, final_status, trained, train_reason, promoted,
                                   decision_reason, model_version, mlflow_run_id, candidate_mae, champion_mae,
-                                  delta_mae_pct, n_rows_raw, n_rows_clean, airflow_run_id
+                                  delta_mae_pct, n_rows_raw, n_rows_clean, airflow_run_id,
+                                  COALESCE(alertas, '[]'::jsonb) AS alertas
                            FROM audit.batch_history ORDER BY id""")
             cols = [d[0] for d in cur.description]
             return pd.DataFrame(cur.fetchall(), columns=cols)
@@ -92,15 +93,19 @@ with tab_hist:
             st.info("Todavía no hay corridas del DAG registradas.")
         else:
             lotes = df[df["batch_number"].notna()]
-            c1, c2, c3, c4 = st.columns(4)
+            c1, c2, c3, c4, c5 = st.columns(5)
             c1.metric("Lotes procesados", int(lotes["batch_number"].nunique()))
             c2.metric("Entrenamientos", int(df["trained"].fillna(False).sum()))
             c3.metric("Promociones", int((df["promoted"] == True).sum()))  # noqa: E712
             c4.metric("Rechazos", int((df["final_status"] == "rechazado").sum()))
+            c5.metric("Lotes con alerta", int(df["alertas"].map(len).gt(0).sum()))
 
             st.subheader("Qué pasó en cada lote")
             for fila in df.to_dict("records"):
                 st.markdown("- " + narrar(fila))
+                if fila["alertas"]:
+                    st.warning("⚠️ " + " · ".join(fila["alertas"])
+                               + ("" if fila.get("trained") else "  —  alerta registrada, el lote NO reentrenó"))
 
             entrenados = df[df["trained"] == True].dropna(subset=["candidate_mae"])  # noqa: E712
             if not entrenados.empty:
@@ -110,7 +115,7 @@ with tab_hist:
                     columns={"candidate_mae": "candidato", "champion_mae": "campeón anterior"}))
 
             st.subheader("Detalle")
-            tabla = df.rename(columns={"batch_number": "lote", "final_status": "estado", "trained": "entrenó",
+            tabla = df.assign(alertas=df["alertas"].map(lambda a: " · ".join(a) if a else "")).rename(columns={"batch_number": "lote", "final_status": "estado", "trained": "entrenó",
                                        "promoted": "promovido", "model_version": "versión",
                                        "delta_mae_pct": "Δ MAE %", "mlflow_run_id": "run MLflow"})
             config = {}
@@ -119,5 +124,6 @@ with tab_hist:
                     lambda r: f"{MLFLOW_UI_URL}/#/experiments/0/runs/{r}" if r else None)
                 config["run MLflow"] = st.column_config.LinkColumn(display_text="abrir run")
             st.dataframe(tabla[["lote", "estado", "entrenó", "promovido", "versión", "Δ MAE %", "candidate_mae",
-                                "champion_mae", "n_rows_raw", "n_rows_clean", "run MLflow", "processed_at"]],
+                                "champion_mae", "alertas", "n_rows_raw", "n_rows_clean", "run MLflow",
+                                "processed_at"]],
                          column_config=config, hide_index=True, use_container_width=True)

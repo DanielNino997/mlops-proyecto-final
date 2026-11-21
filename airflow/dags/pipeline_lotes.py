@@ -5,8 +5,10 @@ Cada corrida consume **un** lote de la API de datos y lo lleva por:
 ingesta → RAW → validaciones → CLEAN → decisión de entrenamiento → (entrenamiento → MLflow →
 comparación con el campeón → promoción o rechazo) → historial en `audit.batch_history`.
 
-- Bifurcación 1 (`decide_training`): reglas de `lib/decision.py` (volumen mínimo, drift PSI, categorías nuevas,
-  volumen, degradación del campeón). Nunca por calendario ni por número de lotes.
+- Bifurcación 1 (`decide_training`): reglas de `lib/decision.py` (volumen mínimo, drift por PSI / dispersión /
+  rango p1–p99, categorías nuevas, volumen, degradación del campeón). Nunca por calendario ni por número de lotes.
+- Alertas: se calculan en `decide_training` y se guardan en `batch_history.alertas` SIEMPRE, se entrene o no
+  (alerta ≠ reentrenar).
 - Bifurcación 2 (`decide_promotion`): promover si el MAE baja >= 3 % y el RMSE no empeora más de 1 %.
 - Los lotes no viajan por XCom (pesan hasta 60 MB): se guardan en STAGING_DIR y por XCom van solo resúmenes.
 """
@@ -147,6 +149,7 @@ def pipeline_lotes():
 
     @task.branch
     def decide_training(batch, categories, drift, prep):
+        from lib.decision import build_alerts
         from lib.decision import decide_training as decide
         from lib.promote import champion_degradation, get_champion
         from lib.train import load_clean
@@ -157,8 +160,11 @@ def pipeline_lotes():
         summary = {"status": prep["status"], "volume_increase_pct": prep.get("volume_increase_pct"),
                    "new_categories": categories, "drift": drift}
         train, reason, _ = decide(summary, has_champion, degradation)
+        alerts = build_alerts(summary, degradation)
+        for alert in alerts:
+            log.warning("ALERTA lote %s: %s", batch["batch_number"], alert)
         get_current_context()["ti"].xcom_push(key="decision", value={"trained": train, "train_reason": reason,
-                                                                     "degradation": degradation})
+                                                                     "degradation": degradation, "alerts": alerts})
         log.info("Decisión: %s", reason)
         return "train_candidate_model" if train else "skip_training"
 
@@ -240,7 +246,8 @@ def pipeline_lotes():
                "decision_reason": cmp.get("decision_reason") or decision.get("train_reason"),
                "candidate_mae": cmp.get("candidate_mae"), "candidate_rmse": cmp.get("candidate_rmse"),
                "champion_mae": cmp.get("champion_mae"), "champion_rmse": cmp.get("champion_rmse"),
-               "delta_mae_pct": cmp.get("delta_mae_pct"), "final_status": final}
+               "delta_mae_pct": cmp.get("delta_mae_pct"), "final_status": final,
+               "alertas": decision.get("alerts", [])}
         write_history(row)
         shutil.rmtree(_run_dir(ctx), ignore_errors=True)
         log.info("Lote %s -> %s: %s", row["batch_number"], final, row["decision_reason"])
