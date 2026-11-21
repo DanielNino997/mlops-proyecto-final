@@ -1,0 +1,10 @@
+INFO Lote 0 del grupo 2 recibido: 73784 filas
+INFO Lote 0 del grupo 2 guardado en RAW: batch_id=1, 73784 filas
+INFO Lote 1 del grupo 2 recibido: 94551 filas
+INFO Lote 1 del grupo 2 guardado en RAW: batch_id=2, 94551 filas
+INFO Lote 2 del grupo 2 recibido: 230366 filas
+INFO Lote 2 del grupo 2 guardado en RAW: batch_id=3, 230366 filas
+{'ok': True, 'status': 'reset ok', 'group_number': 2}
+{'batch_id': 1, 'group_number': 2, 'batch_number': 0, 'n_rows': 73784, 'duplicate': False, 'payload_hash': 'e4c6abd016b2c533fabe5f7eb4dc57e8e64ec254894538792f9ced1e519e5d81'}  (3.6 s)
+{'batch_id': 2, 'group_number': 2, 'batch_number': 1, 'n_rows': 94551, 'duplicate': False, 'payload_hash': '1fe5e3d7da8e31cf729763301dfe0322d1e7c4b0461a9e1fbb02238e4dad0ac9'}  (4.3 s)
+{'batch_id': 3, 'group_number': 2, 'batch_number': 2, 'n_rows': 230366, 'duplicate': False, 'payload_hash': 'df23c2a1d857f1e4555c879002eb8e9e53e09985f160feda5c87a0e387e0f188'}  (10.7 s)

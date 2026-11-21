@@ -1,0 +1,9 @@
+INFO Lote 0 del grupo 2 recibido: 73784 filas
+WARNING Lote 0 del grupo 2 ya estaba guardado (batch_id=1): no se reinserta
+{'ok': True, 'status': 'reset ok', 'group_number': 2}
+{'batch_id': 1, 'group_number': 2, 'batch_number': 0, 'n_rows': 73784, 'duplicate': True, 'same_payload': True}  (0.6 s)
+ total_filas_raw 
+-----------------
+          398701
+(1 row)
+

@@ -1,0 +1,20 @@
+              List of relations
+ Schema |       Name       | Type  |  Owner   
+--------+------------------+-------+----------
+ public | batches          | table | datauser
+ public | inference_events | table | datauser
+ public | properties_raw   | table | datauser
+(3 rows)
+
+              List of relations
+ Schema |       Name       | Type  |  Owner   
+--------+------------------+-------+----------
+ public | properties_clean | table | datauser
+(1 row)
+
+             List of relations
+ Schema |     Name      | Type  |  Owner   
+--------+---------------+-------+----------
+ audit  | batch_history | table | datauser
+(1 row)
+
