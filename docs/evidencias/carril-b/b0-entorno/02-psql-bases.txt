@@ -1,0 +1,13 @@
+                                                       List of databases
+    Name    |  Owner   | Encoding | Locale Provider |  Collate   |   Ctype    | ICU Locale | ICU Rules |   Access privileges   
+------------+----------+----------+-----------------+------------+------------+------------+-----------+-----------------------
+ clean_data | datauser | UTF8     | libc            | en_US.utf8 | en_US.utf8 |            |           | 
+ datauser   | datauser | UTF8     | libc            | en_US.utf8 | en_US.utf8 |            |           | 
+ postgres   | datauser | UTF8     | libc            | en_US.utf8 | en_US.utf8 |            |           | 
+ raw_data   | datauser | UTF8     | libc            | en_US.utf8 | en_US.utf8 |            |           | 
+ template0  | datauser | UTF8     | libc            | en_US.utf8 | en_US.utf8 |            |           | =c/datauser          +
+            |          |          |                 |            |            |            |           | datauser=CTc/datauser
+ template1  | datauser | UTF8     | libc            | en_US.utf8 | en_US.utf8 |            |           | =c/datauser          +
+            |          |          |                 |            |            |            |           | datauser=CTc/datauser
+(6 rows)
+

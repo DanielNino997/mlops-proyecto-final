@@ -1,0 +1,6 @@
+NAME                    IMAGE                                           COMMAND                  SERVICE           CREATED              STATUS                        PORTS
+dev-data-api-1          cristiandiaz13/mlops-puj:data-api-pf-v2         "python run.py"          data-api          About a minute ago   Up About a minute             0.0.0.0:8000->80/tcp, [::]:8000->80/tcp
+dev-minio-1             coollabsio/minio:RELEASE.2025-04-22T22-12-26Z   "/usr/bin/docker-ent…"   minio             About a minute ago   Up About a minute (healthy)   0.0.0.0:9000-9001->9000-9001/tcp, [::]:9000-9001->9000-9001/tcp
+dev-mlflow-1            ghcr.io/mlflow/mlflow:v2.17.2                   "bash -c 'pip instal…"   mlflow            About a minute ago   Up About a minute             0.0.0.0:5000->5000/tcp, [::]:5000->5000/tcp
+dev-postgres-data-1     postgres:16                                     "docker-entrypoint.s…"   postgres-data     About a minute ago   Up About a minute (healthy)   0.0.0.0:5433->5432/tcp, [::]:5433->5432/tcp
+dev-postgres-mlflow-1   postgres:16                                     "docker-entrypoint.s…"   postgres-mlflow   About a minute ago   Up About a minute (healthy)   0.0.0.0:5434->5432/tcp, [::]:5434->5432/tcp

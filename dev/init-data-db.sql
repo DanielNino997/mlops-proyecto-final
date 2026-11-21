@@ -1,0 +1,2 @@
+CREATE DATABASE raw_data;
+CREATE DATABASE clean_data;

@@ -1,0 +1,2 @@
+mlflow-1  | bucket 'mlflow-artifacts' creado
+mlflow-1  | [2026-11-21 15:36:20 +0000] [18] [INFO] Listening at: http://0.0.0.0:5000 (18)
