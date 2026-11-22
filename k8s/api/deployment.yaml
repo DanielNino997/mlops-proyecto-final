@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: dnino97/mlops-pf-api:pendiente
+          image: dnino97/mlops-pf-api:9afa0437ada64e4fc3f0a45891af4fcbb4b99588
           ports:
             - name: http
               containerPort: 8000
