@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: streamlit
-          image: dnino97/mlops-pf-streamlit:pendiente
+          image: dnino97/mlops-pf-streamlit:9afa0437ada64e4fc3f0a45891af4fcbb4b99588
           ports:
             - name: http
               containerPort: 8501
