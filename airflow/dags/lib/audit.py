@@ -6,8 +6,8 @@ from lib.db import connect
 COLUMNS = ["batch_id", "group_number", "batch_number", "airflow_run_id", "n_rows_raw", "n_rows_clean",
            "validations", "new_categories", "drift", "trained", "train_reason", "mlflow_run_id",
            "model_version", "promoted", "decision_reason", "candidate_mae", "candidate_rmse",
-           "champion_mae", "champion_rmse", "delta_mae_pct", "final_status"]
-JSON_COLUMNS = {"validations", "new_categories", "drift"}
+           "champion_mae", "champion_rmse", "delta_mae_pct", "final_status", "alertas"]
+JSON_COLUMNS = {"validations", "new_categories", "drift", "alertas"}
 
 
 def write_history(row):

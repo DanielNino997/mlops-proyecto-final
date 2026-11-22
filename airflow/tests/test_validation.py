@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 from lib.preprocess import preprocess
-from lib.validation import detect_new_categories, psi, validate_quality, validate_schema
+from lib.validation import detect_drift, detect_new_categories, psi, validate_quality, validate_schema
 
 FILA = {"brokered_by": 101640.0, "status": "for_sale", "price": 289900.0, "bed": 4.0, "bath": 2.0,
         "acre_lot": 0.38, "street": 1758218.0, "city": "East Windsor", "state": "Connecticut",
@@ -49,3 +49,13 @@ def test_preprocess_limpia_y_conserva_trazabilidad():
     assert out.loc[0, "zip_code"] == "06016"
     assert pd.isna(out.loc[1, "bed"])                          # negativo -> nulo
     assert out.loc[0, "years_since_prev_sale"] > 26
+
+
+def test_drift_reporta_dispersion_y_rango():
+    rng = np.random.default_rng(1)
+    ref = pd.DataFrame({"price": rng.normal(300_000, 50_000, 5000)})
+    igual = detect_drift(pd.DataFrame({"price": rng.normal(300_000, 50_000, 2000)}), ref)["columnas"]["price"]
+    assert 0.9 < igual["std_ratio"] < 1.1 and igual["fuera_rango_pct"] < 5     # ~2 % esperado
+    ancho = detect_drift(pd.DataFrame({"price": rng.normal(300_000, 200_000, 2000)}), ref)["columnas"]["price"]
+    assert ancho["std_ratio"] > 3 and ancho["fuera_rango_pct"] > 50
+    assert igual["p1_ref"] < 300_000 < igual["p99_ref"]

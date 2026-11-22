@@ -107,6 +107,26 @@ def psi(reference, current, bins=10):
     return float(np.sum((cur_pct - ref_pct) * np.log(cur_pct / ref_pct)))
 
 
+def _round(x, nd=4):
+    return None if x is None or not np.isfinite(x) else round(float(x), nd)
+
+
+def variation_and_range(old, new):
+    """Dispersión del lote frente al histórico y fracción del lote fuera del rango p1–p99 del histórico.
+
+    Si el lote viene de la misma distribución, std_ratio ≈ 1 y ~2 % de sus filas cae fuera de [p1, p99].
+    """
+    if old.empty or new.empty:
+        return {"std_ref": None, "std_lote": None, "std_ratio": None,
+                "p1_ref": None, "p99_ref": None, "fuera_rango_pct": None}
+    std_ref, std_lote = float(old.std()), float(new.std())
+    p1, p99 = (float(v) for v in old.quantile([0.01, 0.99]))
+    fuera = float(((new < p1) | (new > p99)).mean() * 100)
+    return {"std_ref": _round(std_ref, 2), "std_lote": _round(std_lote, 2),
+            "std_ratio": _round(std_lote / std_ref, 3) if std_ref > 0 else None,
+            "p1_ref": _round(p1, 2), "p99_ref": _round(p99, 2), "fuera_rango_pct": round(fuera, 2)}
+
+
 def detect_drift(df, reference):
     if reference is None or reference.empty:
         return {"referencia": False, "columnas": {}}
@@ -120,5 +140,6 @@ def detect_drift(df, reference):
             "ks_stat": None if ks is None else round(float(ks), 4),
             "mediana_ref": None if old.empty else float(old.median()),
             "mediana_lote": None if new.empty else float(new.median()),
+            **variation_and_range(old, new),
         }
     return {"referencia": True, "columnas": columns}

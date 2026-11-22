@@ -42,5 +42,8 @@ CREATE TABLE IF NOT EXISTS audit.batch_history (
     champion_mae        DOUBLE PRECISION,
     champion_rmse       DOUBLE PRECISION,
     delta_mae_pct       DOUBLE PRECISION,
-    final_status        TEXT
+    final_status        TEXT,
+    alertas             JSONB                 -- drift / categorías nuevas / degradación, se entrene o no
 );
+-- Para bases creadas antes de B8:
+ALTER TABLE audit.batch_history ADD COLUMN IF NOT EXISTS alertas JSONB;

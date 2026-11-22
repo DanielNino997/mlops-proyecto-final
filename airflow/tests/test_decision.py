@@ -1,4 +1,4 @@
-from lib.decision import decide_training
+from lib.decision import build_alerts, decide_training
 
 BASE = {"status": "valido", "volume_increase_pct": 50.0,
         "drift": {"columnas": {"price": {"psi": 0.01}}},
@@ -30,3 +30,26 @@ def test_drift_dispara_entrenamiento():
 def test_sin_cambios_no_entrena():
     ok, _, _ = decide_training({**BASE, "volume_increase_pct": 6.0}, has_champion=True)
     assert not ok
+
+
+def test_alertas_se_llenan_aunque_no_entrene():
+    # Caso del lote 3: drift de precio y estado nuevo, pero solo +1 % de volumen
+    s = {**BASE, "volume_increase_pct": 1.02,
+         "drift": {"columnas": {"price": {"psi": 0.41, "std_ratio": 1.1, "fuera_rango_pct": 3.0}}},
+         "new_categories": {"state": {"filas_con_nuevas_pct": 100.0}, "city": {"filas_con_nuevas_pct": 27.1}}}
+    ok, _, _ = decide_training(s, has_champion=True)
+    alerts = build_alerts(s)
+    assert not ok
+    assert "drift: price PSI 0.41" in alerts
+    assert "categorías nuevas: state 100 % filas" in alerts and "categorías nuevas: city 27 % filas" in alerts
+
+
+def test_rango_y_dispersion_disparan_drift_sin_psi():
+    s = {**BASE, "volume_increase_pct": 8.0,
+         "drift": {"columnas": {"house_size": {"psi": 0.05, "std_ratio": 0.3, "fuera_rango_pct": 95.0}}}}
+    ok, reason, _ = decide_training(s, has_champion=True)
+    assert ok and "house_size" in reason and "std x0.30" in reason and "95 % fuera de p1–p99" in reason
+
+
+def test_sin_hallazgos_no_hay_alertas():
+    assert build_alerts(BASE) == []
