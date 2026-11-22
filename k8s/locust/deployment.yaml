@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: locust
-          image: dnino97/mlops-pf-locust:pendiente
+          image: dnino97/mlops-pf-locust:9afa0437ada64e4fc3f0a45891af4fcbb4b99588
           ports:
             - name: web
               containerPort: 8089
