@@ -4,3 +4,7 @@ __pycache__/
 *.pyc
 mlruns/
 .ipynb_checkpoints/
+
+# Variantes y respaldos de archivos con credenciales
+.env.*
+!.env.example
