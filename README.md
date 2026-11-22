@@ -527,9 +527,57 @@ _Targets en UP: la réplica de la API (descubierta por anotación) y cAdvisor de
 ![Dashboard de Grafana en reposo](docs/evidencias/carril-a/11-grafana-dashboard-reposo.png)
 _El dashboard antes de la prueba de carga: versión 1 del modelo, una réplica y las primeras predicciones desde Streamlit._
 
-<!-- PENDIENTE (carril A): prueba de carga en el clúster con 1 réplica y luego con 3. Agregar aquí las capturas de
-Locust y de Grafana durante la prueba, y el análisis: peticiones/s, latencia p50/p95, errores, CPU y memoria del
-pod frente a sus limits, throttling y qué cambió al escalar réplicas. -->
+**Prueba de carga en el clúster.** Locust (desplegado en el clúster, contra `http://api:8000`) con **50 usuarios**,
+ramp-up de 5 usuarios/s, una predicción cada 0,5–2 s por usuario y 3 minutos por escenario. Primero con 1 réplica de
+la API; después se escaló a 3 réplicas **por Git** (`replicas: 3` en `k8s/api/deployment.yaml`, commit `3177196`) y se
+repitió exactamente la misma carga. Las réplicas nuevas cargaron el modelo `champion` (v5) desde MLflow y pasaron la
+readiness probe en ~20 s; Prometheus las descubrió solas.
+
+| Métrica (`/predict`) | 1 réplica | 3 réplicas | Cambio |
+|---|---|---|---|
+| Peticiones/s | 21,7 | 35,8 | +65 % |
+| Latencia mediana (Locust) | 830 ms | 47 ms | −94 % |
+| Latencia p95 (Locust) | 1.500 ms | 170 ms | −89 % |
+| Latencia p99 (Locust) | 1.700 ms | 270 ms | −84 % |
+| Fallos | 0 % | 0 % | — |
+| CPU por réplica (Grafana) | 0,9–0,95 núcleos (límite: 1) | 0,2–0,4 núcleos | Lejos del límite |
+| Latencia del modelo p50 / p95 (Grafana) | ~500 ms / 1,5–2 s | ~35 ms / ~200 ms | — |
+| Memoria por réplica | ~192 MiB | 150–192 MiB | Sin cambio relevante |
+
+**Qué observamos.**
+- **Con 1 réplica la API está limitada por CPU.** La CPU del pod se quedó pegada a su límite de 1 núcleo desde el
+  primer minuto, y el rendimiento se estancó en ~22 peticiones/s. Lo que no alcanzó a atender se convirtió en
+  latencia: la mediana pasó de ~25 ms en reposo a 830 ms. No hubo errores: la API se degrada por latencia, no se cae.
+- **El problema no era la memoria.** La memoria se mantuvo estable en ~190 MiB de 1 GiB durante toda la prueba, así
+  que subir el límite de memoria no habría cambiado nada.
+- **El panel de latencia del modelo también subió** (de ~25 ms a ~500 ms de mediana): con un solo núcleo, las
+  predicciones simultáneas compiten por la CPU y cada una tarda más. La diferencia entre la latencia que mide Locust
+  y la del modelo es el tiempo en cola dentro del pod.
+- **Con 3 réplicas la API deja de ser el cuello de botella.** Atiende ~36 peticiones/s, prácticamente toda la demanda
+  que generan 50 usuarios con esa espera (~38–40 req/s), con una mediana de 47 ms y cada réplica usando entre 0,2 y
+  0,4 núcleos. A partir de aquí, el límite es la carga que genera Locust, no el sistema.
+- **El reparto entre réplicas no es parejo** (una usa la mitad de CPU que las otras). Cada usuario de Locust mantiene
+  abierta su conexión HTTP y el Service de Kubernetes balancea conexiones, no peticiones.
+
+**Conclusión sobre los recursos.** Cada réplica de la API (1 worker de uvicorn, límite de 1 núcleo) sostiene ~22
+predicciones/s antes de saturarse. Para esta carga se recomiendan **3 réplicas**: atienden toda la demanda con margen
+(cada una por debajo del 40 % de su límite) y toleran la caída de una. Con 2 réplicas el sistema quedaría justo en su
+límite. Mantener `requests` de 250m y `limits` de 1 núcleo / 1 GiB por réplica es adecuado; para cargas variables, el
+siguiente paso sería un HorizontalPodAutoscaler por CPU.
+
+![Locust con 1 réplica](docs/img/locust.png)
+_Locust con 50 usuarios y 1 réplica: ~22 predicciones/s, mediana de 830 ms y p95 de 1,5 s, sin fallos._
+
+![Grafana con 1 réplica bajo carga](docs/evidencias/carril-a/13-grafana-1-replica.png)
+_Grafana con 1 réplica: las peticiones se estancan en ~22/s y la CPU del pod se queda pegada a su límite de 1 núcleo;
+la memoria no se mueve._
+
+![Locust con 3 réplicas](docs/evidencias/carril-a/13-locust-3-replicas.png)
+_La misma carga con 3 réplicas: ~36 predicciones/s, mediana de 47 ms y p95 de 170 ms, sin fallos._
+
+![Grafana con 3 réplicas bajo carga](docs/evidencias/carril-a/13-grafana-3-replicas.png)
+_Grafana con 3 réplicas: el panel de réplicas marca 3, la CPU se reparte entre los tres pods (0,2–0,4 núcleos cada uno)
+y la latencia del modelo vuelve a ~35 ms de mediana._
 
 ---
 
