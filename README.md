@@ -129,7 +129,15 @@ clúster; ese compose no es el despliegue. Cada fase cerró con pruebas, un READ
 | B6 API | FastAPI con recarga desde MLflow | ~230 ms por predicción | Medición por partes y `FastPredictor`: ~25 ms con la misma predicción |
 | B7 Streamlit y Locust | Interfaz de inferencia e historial, prueba de carga | La latencia sube bajo carga con 1 proceso | Se escala con réplicas en Kubernetes (ver §13) |
 | B8 Alertas | Alertas de drift siempre registradas (variación y rango, además de PSI) | Hacía falta distinguir alerta de reentrenamiento | Campo `alertas` en la auditoría, `log.warning` en Airflow y aviso en Streamlit |
-| Plataforma | _[carril A: clúster, Argo CD, manifiestos, Prometheus y Grafana]_ | _[problemas encontrados]_ | _[cómo se resolvieron]_ |
+| A1 Clúster | Clúster `kind` de un nodo en la VM (4 CPU, 15 GB) | Un contenedor de Rancher de un taller anterior usaba 5,8 GB de RAM y `/var` estaba al 78 % | Se eliminó Rancher y se limpiaron imágenes, volúmenes y caché de Docker (42 GB) antes de crear el clúster |
+| A2 Argo CD | Argo CD con Helm y app-of-apps (`k8s/apps/`) | La instalación por defecto trae Dex y Notifications, que no se usan y consumen memoria | `values.yaml` mínimo: sin Dex ni Notifications y con `requests`/`limits` en cada componente |
+| A3 Secrets | Todas las credenciales como Secrets de Kubernetes | Una contraseña en un manifiesto queda versionada en Git | `scripts/crear-secrets.sh` crea los Secrets desde `k8s/.env` (ignorado por Git); los manifiestos solo usan `secretKeyRef`. Se agregó `.env.*` al `.gitignore` después de que un respaldo `.env.bak` quedó sin ignorar |
+| A4 Bases y MinIO | Postgres de datos, de MLflow y de Airflow; MinIO con su bucket | El Job que crea el bucket (hook PostSync de Argo CD) quedó esperando para siempre y bloqueó la sincronización | El log mostró `lookup minio … no such host`: faltaba el Service de MinIO. Se agregó y se terminó la operación colgada en Argo CD |
+| A5 MLflow | Imagen propia de MLflow construida por Actions, con bump automático del tag | La imagen oficial no trae `psycopg2` ni `boto3`, y el primer despliegue apuntaba a un tag que aún no existía (`ImagePullBackOff`) | Imagen propia con los drivers. Orden fijo: primero la imagen y su bump, después la Application |
+| A6 Airflow | Chart oficial 1.16.0 (Airflow 2.10.5), LocalExecutor y git-sync | El Postgres del chart usa imágenes de Bitnami que ya no se publican; las llaves generadas por el chart cambian en cada render y dejan a Argo CD *OutOfSync* | Postgres propio (`postgres-airflow`), fernet key, webserver key y conexión como Secrets, y la migración como hook `Sync` de Argo CD |
+| A6 Airflow (recursos) | Primera corrida del DAG en el clúster | El sidecar `scheduler-log-groomer` se reinició por **OOMKilled** con un límite de 128 Mi | Se identificó con el estado de los contenedores del pod y se subió el límite a 384 Mi en `k8s/airflow/values.yaml`; Argo CD aplicó el cambio desde Git |
+| A7 API, Streamlit, Locust | Manifiestos y bump automático en los 5 workflows de imágenes | Los workflows compartían un grupo de `concurrency`: al dispararse juntos, GitHub cancelaba alguno | Un grupo de `concurrency` por workflow y reintento con `git pull --rebase` en el commit del bump. Un solo push dispara los 5 builds y los 5 bumps |
+| A8 Observabilidad | Prometheus (API + cAdvisor), Grafana con dashboard en ConfigMap y metrics-server | Sin metrics-server no hay `kubectl top` ni CPU/memoria por pod | metrics-server con `--kubelet-insecure-tls` (necesario en kind) y Prometheus leyendo cAdvisor a través del kubelet |
 
 **Otro problema de entorno:** la partición `/var` de la VM (15 GB) se llenó al construir la imagen de Airflow. Se
 movió el almacenamiento de Docker a `/opt`, en la partición raíz.
@@ -142,7 +150,8 @@ Evidencia detallada de cada fase, con salidas reales:
 [B4](docs/evidencias/carril-b/b4-modelo-mlflow/README.md) ·
 [B5](docs/evidencias/carril-b/b5-dag/README.md) ·
 [B6](docs/evidencias/carril-b/b6-fastapi/README.md) ·
-[B7](docs/evidencias/carril-b/b7-streamlit-locust/README.md)
+[B7](docs/evidencias/carril-b/b7-streamlit-locust/README.md) ·
+capturas del carril A en [`docs/evidencias/carril-a/`](docs/evidencias/carril-a/)
 
 ---
 
@@ -369,9 +378,9 @@ _Historial de los 6 lotes: 5 entrenamientos promovidos, el lote 3 con alertas y 
 
 ## 11. CI/CD con GitHub Actions
 
-Hay cuatro workflows en `.github/workflows/`, uno por imagen propia. Cada uno **corre las pruebas antes de
-construir**; si fallan, no se publica nada. Las imágenes se publican en Docker Hub con dos etiquetas: el **SHA del
-commit** (versión exacta) y `latest`. Las credenciales están en los secrets del repo.
+Hay cinco workflows en `.github/workflows/`, uno por imagen propia. Cada uno **corre las pruebas antes de
+construir**; si fallan, no se publica nada. Las imágenes se publican en Docker Hub con el **SHA del commit** (versión
+exacta) y `latest`. Las credenciales de Docker Hub están en los secrets del repo.
 
 | Imagen | Workflow | Pruebas previas |
 |---|---|---|
@@ -379,32 +388,117 @@ commit** (versión exacta) y `latest`. Las credenciales están en los secrets de
 | `dnino97/mlops-pf-api` | `api-image.yml` | API, paridad de features con el DAG, FastPredictor |
 | `dnino97/mlops-pf-streamlit` | `streamlit-image.yml` | narración del historial |
 | `dnino97/mlops-pf-locust` | `locust-image.yml` | — |
+| `dnino97/mlops-pf-mlflow` | `mlflow-image.yml` | — (servidor MLflow 2.17.2 + `psycopg2` + `boto3`) |
 
-![Workflows de GitHub Actions en verde](docs/img/github-actions.png)
-_Ejecuciones de los cuatro workflows en verde._
+**De la imagen al clúster sin pasos manuales.** Después de publicar, un segundo job (`bump-manifest`) hace que
+`github-actions[bot]` escriba el nuevo tag en el manifiesto del componente (`k8s/<componente>/deployment.yaml` o
+`k8s/airflow/values.yaml`) y lo suba a la misma rama. Argo CD ve ese commit y redespliega. Los manifiestos nunca usan
+`latest`: siempre apuntan al SHA que se construyó.
 
-![Imágenes en Docker Hub con tags por SHA](docs/img/dockerhub-tags.png)
-_Tags de una imagen en Docker Hub: `latest` y el SHA de cada commit._
+- La imagen de Airflow recibe `GIT_SHA` como *build-arg*, y el entrenamiento lo registra en MLflow como tag `git_sha` (RF5).
+- Cada workflow tiene su propio grupo de `concurrency`, y el bump reintenta con `git pull --rebase`. Así varios
+  workflows pueden terminar al tiempo sin pisarse.
+
+![Workflow de Airflow con build-push y bump-manifest en verde](docs/evidencias/carril-a/09-actions-airflow.png)
+_Workflow `Imagen Airflow`: `build-push` (pruebas, build y push) y luego `bump-manifest`._
+
+![Commits del bot actualizando los tags de las cinco imágenes](docs/evidencias/carril-a/10-commits-bots-bump.png)
+_Un solo commit (`9afa043`) disparó los cinco workflows; `github-actions[bot]` hizo un commit `deploy(...)` por
+imagen con el tag nuevo._
+
+![Imagen de MLflow en Docker Hub con el tag del SHA](docs/evidencias/carril-a/07-dockerhub-mlflow.png)
+_Tags en Docker Hub: el SHA del commit que construyó la imagen y `latest`._
+
+![Tags de imagen en los manifiestos de k8s/](docs/evidencias/carril-a/10-tags-sha-manifiestos.png)
+_Los cinco manifiestos en Git apuntan a imágenes versionadas por SHA, ninguno a `latest`._
 
 ---
 
 ## 12. Kubernetes y Argo CD
 
-_[Sección del carril A: cómo se crea el clúster; la Application de Argo CD (app-of-apps, sincronización
-`automated`); los manifiestos en `k8s/` con `resources.requests`/`limits` en cada contenedor y por qué esos valores;
-probes, Secrets, PVC y ConfigMaps. La API de datos también corre en el clúster.]_
+**Clúster.** Un clúster `kind` de un nodo (`k8s/cluster/kind.yaml`) en la VM del curso (4 CPU, 15 GB de RAM). Un
+solo nodo porque cada nodo de kind es un contenedor con su propio overhead. Los servicios no se exponen hacia fuera:
+se accede con `kubectl port-forward` y un túnel SSH. Todo el proyecto vive en el namespace `mlops`.
 
-![Argo CD con las aplicaciones Synced y Healthy](docs/img/argocd-synced.png)
-_[pie]_
+**GitOps con app-of-apps.** Argo CD se instala una vez con Helm (`k8s/argocd/values.yaml`). Lo único que se aplica a
+mano es `k8s/argocd/root.yaml`: una Application que lee `k8s/apps/` y crea una Application por componente. Desde ahí
+**todo entra por Git**: un archivo nuevo en `k8s/apps/` crea un componente, y un cambio en un manifiesto se aplica
+solo. Todas las Applications usan `syncPolicy.automated` con `prune` (borra del clúster lo que se quita de Git) y
+`selfHeal` (revierte cambios hechos a mano).
 
-![Sincronización de Argo CD disparada por un cambio en Git](docs/img/argocd-cambio-git.png)
-_[pie: qué se cambió en Git (por ejemplo, el tag de la imagen de la API) y cómo Argo CD lo aplicó]_
+| Application | Qué despliega | Origen |
+|---|---|---|
+| `postgres-data` | Postgres con las bases `raw_data` y `clean_data` (StatefulSet + PVC 10 Gi) | `k8s/postgres-data/` |
+| `postgres-mlflow` | Postgres de metadatos de MLflow (no SQLite) | `k8s/postgres-mlflow/` |
+| `postgres-airflow` | Postgres de metadatos de Airflow | `k8s/postgres-airflow/` |
+| `minio` | MinIO (PVC 5 Gi) y el Job que crea el bucket `mlflow-artifacts` | `k8s/minio/` |
+| `mlflow` | Servidor MLflow con `--serve-artifacts` | `k8s/mlflow/` |
+| `data-api` | API de datos del curso (`cristiandiaz13/mlops-puj:data-api-pf-v2`) | `k8s/data-api/` |
+| `airflow` | Chart oficial `apache-airflow/airflow` 1.16.0 + nuestros values (multi-source) | `k8s/airflow/values.yaml` |
+| `api`, `streamlit`, `locust` | Inferencia, interfaz y prueba de carga | `k8s/api/`, `k8s/streamlit/`, `k8s/locust/` |
+| `observability` | Prometheus, Grafana, su configuración y el dashboard | `k8s/observability/` |
+| `metrics-server` | Métricas de CPU/memoria por pod (`kubectl top`) | chart oficial |
 
-![Pods del proyecto corriendo](docs/img/kubectl-pods.png)
-_[pie]_
+**Decisiones del despliegue**
+- **Secrets fuera de Git.** `scripts/crear-secrets.sh` lee `k8s/.env` (no versionado; la plantilla es
+  `k8s/.env.example`) y crea los Secrets del namespace. Los manifiestos solo los referencian con `secretKeyRef`. Las
+  URIs de conexión completas, con su contraseña, también viven en el Secret, para que ningún manifiesto lleve
+  credenciales.
+- **Persistencia.** Los tres Postgres y MinIO son StatefulSets con PVC (`local-path` de kind): los datos sobreviven al
+  reinicio de los pods. Los logs de las tareas de Airflow también van en un PVC.
+- **Configuración como código.** El script de creación de las bases, la configuración de Prometheus y el dashboard de
+  Grafana son ConfigMaps versionados.
+- **Probes.** Cada servicio tiene `readinessProbe` (no recibe tráfico hasta estar listo) y `livenessProbe` (se reinicia
+  si se cuelga). La API usa `/health` para readiness, que responde 503 mientras no tenga modelo cargado, y `/live` para
+  liveness.
+- **Airflow.** LocalExecutor: las tareas corren dentro del pod del scheduler, sin Redis ni workers de Celery, lo que
+  ahorra memoria en una sola VM. Los DAGs llegan por git-sync cada 60 s, así que un cambio en el DAG no obliga a
+  reconstruir la imagen. La migración de la base corre como hook `Sync` de Argo CD.
+- **La API de datos también corre en el clúster**, y el DAG la llama por su nombre (`http://data-api`). Guarda en
+  memoria el último lote entregado; si su pod se reinicia vuelve al lote 0, y el DAG no reprocesa lotes repetidos
+  (llave única `group_number` + `batch_number` en RAW).
 
-![Uso de recursos de los pods](docs/img/kubectl-top.png)
-_[pie: `kubectl top pods` o `kubectl describe` mostrando requests y limits]_
+**Recursos.** Todos los contenedores (incluidos los *sidecars*, los *initContainers* y los Jobs) declaran
+`requests` y `limits` de CPU y memoria. Los `requests` son lo que el scheduler de Kubernetes reserva y los `limits`
+el techo: si un contenedor pasa su límite de memoria, Kubernetes lo reinicia (`OOMKilled`); si pasa el de CPU, lo frena.
+Los valores se fijaron por el pico esperado de cada componente, no por su consumo en reposo.
+
+| Componente | requests (CPU / mem) | limits (CPU / mem) | En reposo | Por qué |
+|---|---|---|---|---|
+| Airflow scheduler | 500m / 1 Gi | 2 / 5 Gi | 515 Mi | Con LocalExecutor aquí se cargan lotes de hasta 360 mil filas y se entrena el modelo |
+| Airflow webserver | 250m / 768 Mi | 1 / 1,5 Gi | 778 Mi | UI con 2 workers de gunicorn |
+| Postgres de datos | 250m / 512 Mi | 1 / 1,5 Gi | 27 Mi | Recibe los lotes completos con `COPY` |
+| MLflow | 200m / 512 Mi | 1 / 1,5 Gi | 393 Mi | 2 workers; sube y baja los modelos hacia MinIO |
+| API de datos | 100m / 512 Mi | 1 / 2 Gi | 222 Mi | Mantiene los lotes en memoria |
+| API de inferencia | 250m / 512 Mi | 1 / 1 Gi | ~150 Mi | Modelo en memoria; se escala con réplicas |
+| Postgres MLflow / Airflow, MinIO | 100m / 256 Mi | 500m / 1 Gi | < 100 Mi | Solo metadatos y artefactos pequeños |
+| Streamlit · Locust · Prometheus · Grafana | 50–100m / 128–256 Mi | 0,5–1 / 0,5–1 Gi | — | Servicios livianos |
+| Sidecars y Jobs (git-sync, log-groomer, bucket, migración) | 10–100m / 64–256 Mi | 0,1–0,5 / 0,25–1 Gi | — | Corren poco o hacen tareas cortas |
+
+En reposo el nodo usa ~19 % de CPU y ~30 % de memoria, así que queda margen para los picos de entrenamiento y de la
+prueba de carga.
+
+![Argo CD con las 12 aplicaciones Synced y Healthy](docs/evidencias/carril-a/10-argocd-12-apps.png)
+_Las Applications del proyecto en Argo CD, todas `Synced` y `Healthy`, leyendo los manifiestos de Git._
+
+![Sincronización de Argo CD disparada por un commit del bot](docs/evidencias/carril-a/07-argocd-mlflow.png)
+_Application `mlflow` sincronizada al commit `dd3ec72`, que no hizo una persona: lo hizo `github-actions[bot]` al
+cambiar el tag de la imagen (`pendiente` → `2ab8d62…`). Argo CD lo aplicó sin ningún `kubectl apply` manual._
+
+![Diff del commit del bot que cambió el tag de la imagen](docs/evidencias/carril-a/07-commit-bot-bump.png)
+_El cambio en Git que disparó esa sincronización: una sola línea, el tag de la imagen en `k8s/mlflow/deployment.yaml`._
+
+![Árbol de la Application minio en Argo CD](docs/evidencias/carril-a/06-argocd-arbol-minio.png)
+_Recursos que crea la Application `minio`: StatefulSet, pod, PVC, Service y el Job PostSync (⚓) que creó el bucket._
+
+![Pods, Services y PVC del namespace mlops](docs/evidencias/carril-a/06-kubectl-recursos.png)
+_Pods en `Running`, Services internos y PVC en `Bound`; abajo, las bases `raw_data`, `clean_data` y `mlflow` separadas._
+
+![Requests y limits de cada pod](docs/evidencias/carril-a/06-kubectl-limits.png)
+_Requests y limits de CPU y memoria por contenedor, incluido el Job que crea el bucket._
+
+![Uso real de recursos con kubectl top](docs/evidencias/carril-a/09-kubectl-top.png)
+_`kubectl top pods` en reposo, con Airflow y MLflow corriendo._
 
 ---
 
@@ -418,23 +512,111 @@ mediana de 120 ms y p95 de 480 ms. El contador de Prometheus subió exactamente 
 solo proceso, las peticiones simultáneas hacen cola: la latencia sube aunque no haya errores. La API usa 1 worker a
 propósito, para que el modelo y las métricas vivan en un solo proceso, y se escala con **réplicas en Kubernetes**.
 
-_[Prueba en el clúster: Locust con 1 réplica y luego con varias. Análisis de lo observado en Grafana (peticiones/s,
-latencia p50/p95, errores, CPU y memoria del pod frente a sus limits) y conclusión sobre los recursos.]_
+**En el clúster.** Prometheus descubre las réplicas de la API por la anotación `prometheus.io/scrape` del pod (si se
+escala a 3 réplicas, aparecen 3 targets sin tocar la configuración) y lee su `/metrics` cada 5 s. También lee de
+cAdvisor, a través del kubelet, la CPU y la memoria reales de los contenedores. Grafana arranca con el datasource y
+el dashboard ya provisionados desde ConfigMaps (`k8s/observability/`); cambiar el dashboard es un commit, no un clic.
 
-![Targets de Prometheus activos](docs/img/prometheus-targets.png)
-_[pie]_
+El dashboard **"API de inferencia — precio de vivienda"** muestra: versión del modelo cargado, réplicas activas,
+peticiones/s por estado, tasa de errores, latencia p50/p95, CPU y memoria por réplica, *throttling* de CPU (cuánto
+frena el límite a la API) y recargas del modelo.
 
-![Locust durante la prueba de carga](docs/img/locust.png)
-_[pie: usuarios, RPS y fallos]_
+![Targets de Prometheus activos](docs/evidencias/carril-a/11-prometheus-targets.png)
+_Targets en UP: la réplica de la API (descubierta por anotación) y cAdvisor del nodo._
 
-![Grafana durante la prueba de carga](docs/img/grafana-carga.png)
-_[pie: qué se ve al subir la carga y al escalar réplicas]_
+![Dashboard de Grafana en reposo](docs/evidencias/carril-a/11-grafana-dashboard-reposo.png)
+_El dashboard antes de la prueba de carga: versión 1 del modelo, una réplica y las primeras predicciones desde Streamlit._
+
+**Prueba de carga en el clúster.** Locust (desplegado en el clúster, contra `http://api:8000`) con **50 usuarios**,
+ramp-up de 5 usuarios/s, una predicción cada 0,5–2 s por usuario y 3 minutos por escenario. Primero con 1 réplica de
+la API; después se escaló a 3 réplicas **por Git** (`replicas: 3` en `k8s/api/deployment.yaml`, commit `3177196`) y se
+repitió exactamente la misma carga. Las réplicas nuevas cargaron el modelo `champion` (v5) desde MLflow y pasaron la
+readiness probe en ~20 s; Prometheus las descubrió solas.
+
+| Métrica (`/predict`) | 1 réplica | 3 réplicas | Cambio |
+|---|---|---|---|
+| Peticiones/s | 21,7 | 35,8 | +65 % |
+| Latencia mediana (Locust) | 830 ms | 47 ms | −94 % |
+| Latencia p95 (Locust) | 1.500 ms | 170 ms | −89 % |
+| Latencia p99 (Locust) | 1.700 ms | 270 ms | −84 % |
+| Fallos | 0 % | 0 % | — |
+| CPU por réplica (Grafana) | 0,9–0,95 núcleos (límite: 1) | 0,2–0,4 núcleos | Lejos del límite |
+| Latencia del modelo p50 / p95 (Grafana) | ~500 ms / 1,5–2 s | ~35 ms / ~200 ms | — |
+| Memoria por réplica | ~192 MiB | 150–192 MiB | Sin cambio relevante |
+
+**Qué observamos.**
+- **Con 1 réplica la API está limitada por CPU.** La CPU del pod se quedó pegada a su límite de 1 núcleo desde el
+  primer minuto, y el rendimiento se estancó en ~22 peticiones/s. Lo que no alcanzó a atender se convirtió en
+  latencia: la mediana pasó de ~25 ms en reposo a 830 ms. No hubo errores: la API se degrada por latencia, no se cae.
+- **El problema no era la memoria.** La memoria se mantuvo estable en ~190 MiB de 1 GiB durante toda la prueba, así
+  que subir el límite de memoria no habría cambiado nada.
+- **El panel de latencia del modelo también subió** (de ~25 ms a ~500 ms de mediana): con un solo núcleo, las
+  predicciones simultáneas compiten por la CPU y cada una tarda más. La diferencia entre la latencia que mide Locust
+  y la del modelo es el tiempo en cola dentro del pod.
+- **Con 3 réplicas la API deja de ser el cuello de botella.** Atiende ~36 peticiones/s, prácticamente toda la demanda
+  que generan 50 usuarios con esa espera (~38–40 req/s), con una mediana de 47 ms y cada réplica usando entre 0,2 y
+  0,4 núcleos. A partir de aquí, el límite es la carga que genera Locust, no el sistema.
+- **El reparto entre réplicas no es parejo** (una usa la mitad de CPU que las otras). Cada usuario de Locust mantiene
+  abierta su conexión HTTP y el Service de Kubernetes balancea conexiones, no peticiones.
+
+**Conclusión sobre los recursos.** Cada réplica de la API (1 worker de uvicorn, límite de 1 núcleo) sostiene ~22
+predicciones/s antes de saturarse. Para esta carga se recomiendan **3 réplicas**: atienden toda la demanda con margen
+(cada una por debajo del 40 % de su límite) y toleran la caída de una. Con 2 réplicas el sistema quedaría justo en su
+límite. Mantener `requests` de 250m y `limits` de 1 núcleo / 1 GiB por réplica es adecuado; para cargas variables, el
+siguiente paso sería un HorizontalPodAutoscaler por CPU.
+
+![Locust con 1 réplica](docs/img/locust.png)
+_Locust con 50 usuarios y 1 réplica: ~22 predicciones/s, mediana de 830 ms y p95 de 1,5 s, sin fallos._
+
+![Grafana con 1 réplica bajo carga](docs/evidencias/carril-a/13-grafana-1-replica.png)
+_Grafana con 1 réplica: las peticiones se estancan en ~22/s y la CPU del pod se queda pegada a su límite de 1 núcleo;
+la memoria no se mueve._
+
+![Locust con 3 réplicas](docs/evidencias/carril-a/13-locust-3-replicas.png)
+_La misma carga con 3 réplicas: ~36 predicciones/s, mediana de 47 ms y p95 de 170 ms, sin fallos._
+
+![Grafana con 3 réplicas bajo carga](docs/evidencias/carril-a/13-grafana-3-replicas.png)
+_Grafana con 3 réplicas: el panel de réplicas marca 3, la CPU se reparte entre los tres pods (0,2–0,4 núcleos cada uno)
+y la latencia del modelo vuelve a ~35 ms de mediana._
 
 ---
 
 ## 14. Cómo ejecutarlo
 
-**En Kubernetes** _(carril A)_: _[pasos para crear el clúster, instalar Argo CD y aplicar la Application raíz]_.
+**En Kubernetes** (el despliegue del proyecto). Requisitos: Docker, `kind`, `kubectl` y `helm`. Desde la raíz del repo:
+
+```bash
+# 1. Clúster
+kind create cluster --config k8s/cluster/kind.yaml
+
+# 2. Argo CD
+helm repo add argo https://argoproj.github.io/argo-helm && helm repo update
+helm install argocd argo/argo-cd -n argocd --create-namespace -f k8s/argocd/values.yaml --wait
+
+# 3. Secrets (las credenciales nunca van a Git)
+cp k8s/.env.example k8s/.env        # poner valores reales; generar con: openssl rand -hex 16
+./scripts/crear-secrets.sh
+
+# 4. App-of-apps: desde aquí Argo CD despliega todo lo que está en k8s/apps/
+kubectl apply -f k8s/argocd/root.yaml
+kubectl -n argocd get applications  # esperar a que todas queden Synced / Healthy
+
+# 5. Usuario admin de Airflow (una vez, con el webserver arriba)
+./scripts/crear-usuario-airflow.sh
+
+# 6. Acceso a las interfaces (en otra terminal o con túnel SSH)
+kubectl -n argocd port-forward svc/argocd-server     8081:80   &
+kubectl -n mlops  port-forward svc/airflow-webserver 8080:8080 &
+kubectl -n mlops  port-forward svc/mlflow            5000:5000 &
+kubectl -n mlops  port-forward svc/api               8001:8000 &
+kubectl -n mlops  port-forward svc/streamlit         8501:8501 &
+kubectl -n mlops  port-forward svc/locust            8089:8089 &
+kubectl -n mlops  port-forward svc/grafana           3000:3000 &
+kubectl -n mlops  port-forward svc/prometheus        9090:9090 &
+```
+
+La contraseña inicial de Argo CD está en el Secret `argocd-initial-admin-secret`, y las de Airflow y Grafana en `k8s/.env`.
+Cada corrida del DAG (`pipeline_lotes`, botón ▶ en Airflow) consume un lote de la API de datos.
 
 **Entorno local de desarrollo** (solo para desarrollar y probar el carril B; no es el despliegue):
 
@@ -457,7 +639,7 @@ python -m pytest airflow/tests services/api/tests services/streamlit/tests -q
 ## 15. Estructura del repositorio
 
 ```
-.github/workflows/      CI: un workflow por imagen (pruebas + build + push a Docker Hub)
+.github/workflows/      CI: un workflow por imagen (pruebas + build + push + bump del tag en k8s/)
 airflow/
   dags/pipeline_lotes.py   DAG principal (19 tareas, 2 bifurcaciones)
   dags/lib/                lógica probada: cliente API, almacenamiento, validación, drift, entrenamiento, promoción
@@ -467,11 +649,18 @@ services/
   api/                  FastAPI (inferencia, recarga, métricas, FastPredictor)
   streamlit/            interfaz (inferencia + historial)
   locust/               prueba de carga con 500 propiedades reales
+  mlflow/               imagen del servidor MLflow (psycopg2 + boto3)
 k8s/                    manifiestos sincronizados por Argo CD (carril A)
+  cluster/kind.yaml       clúster de un nodo
+  argocd/                 values de Argo CD y root.yaml (app-of-apps)
+  apps/                   una Application por componente
+  airflow/values.yaml     values del chart oficial de Airflow
+  postgres-*/ minio/ mlflow/ data-api/ api/ streamlit/ locust/ observability/
 dev/                    docker compose solo para desarrollo local
-scripts/                utilidades de prueba (ingesta, simulación, diagnóstico de drift)
+scripts/                crear-secrets.sh, crear-usuario-airflow.sh y utilidades de prueba del carril B
 docs/
   decisiones.md         justificación de umbrales y reglas
+  evidencias/carril-a/  capturas de la plataforma (clúster, Argo CD, CI/CD, observabilidad)
   evidencias/carril-b/  evidencia por fase (README + salidas reales)
   img/                  capturas usadas en este README
 ```
@@ -492,3 +681,5 @@ docs/
 | RF8 Registro de inferencias | `raw_data.inference_events` (§9) |
 | RF9 Streamlit | Inferencia + historial (§10) |
 | RF10 Observabilidad y carga | `/metrics`, Prometheus, Grafana, Locust (§13) |
+| CI/CD | 5 workflows: pruebas, imagen con tag SHA y bump automático del manifiesto (§11) |
+| GitOps y Kubernetes | Argo CD app-of-apps con `automated`; `requests`/`limits`, probes, Secrets y PVC en todo (§12) |

@@ -1,0 +1,131 @@
+# Airflow con el chart oficial (apache-airflow/airflow 1.16.0 = Airflow 2.10.5), desplegado por Argo CD.
+# - LocalExecutor: las tareas corren dentro del pod del scheduler (sin Redis ni Celery: ahorra memoria).
+# - Los DAGs llegan por git-sync desde el repo (airflow/dags); la imagen solo trae las dependencias.
+# - Credenciales y llaves salen de Secrets creados por scripts/crear-secrets.sh (nada en claro aquí).
+executor: LocalExecutor
+airflowVersion: "2.10.5"
+
+images:
+  airflow:
+    repository: dnino97/mlops-pf-airflow
+    tag: "9afa0437ada64e4fc3f0a45891af4fcbb4b99588" # bump:airflow (lo actualiza el workflow airflow-image.yml)
+    pullPolicy: IfNotPresent
+
+# Base de metadatos propia (postgres-airflow), no la Postgres embebida del chart.
+data:
+  metadataSecretName: airflow-metadata
+postgresql:
+  enabled: false
+fernetKeySecretName: airflow-fernet-key
+webserverSecretKeySecretName: airflow-webserver-secret
+
+# Componentes que no se usan con LocalExecutor ni en este DAG.
+redis:
+  enabled: false
+statsd:
+  enabled: false
+pgbouncer:
+  enabled: false
+triggerer:
+  enabled: false
+dagProcessor:
+  enabled: false
+
+# Variables que leen las tareas del DAG (mismos nombres que el compose de desarrollo).
+env:
+  - name: MLFLOW_TRACKING_URI
+    value: http://mlflow:5000
+  - name: DATA_API_URL
+    value: http://10.43.97.110:8000   # API del docente (corrida real). La del clúster: http://data-api
+  - name: GROUP_NUMBER
+    value: "2"
+  - name: MODEL_NAME
+    value: house-price-model
+  - name: STAGING_DIR
+    value: /tmp/pipeline_lotes
+secret:
+  - envName: RAW_DB_URL
+    secretName: data-db-credentials
+    secretKey: RAW_DB_URL
+  - envName: CLEAN_DB_URL
+    secretName: data-db-credentials
+    secretKey: CLEAN_DB_URL
+
+config:
+  core:
+    load_examples: "False"
+  webserver:
+    workers: 2
+    expose_config: "False"
+
+dags:
+  persistence:
+    enabled: false
+  gitSync:
+    enabled: true
+    repo: https://github.com/DanielNino997/mlops-proyecto-final.git
+    branch: a1-plataforma-base
+    rev: HEAD
+    depth: 1
+    subPath: airflow/dags
+    period: 60s
+    resources:
+      requests:
+        cpu: 25m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+
+# Con LocalExecutor el scheduler ejecuta las tareas: aquí van los lotes (hasta 360 mil filas) y el entrenamiento.
+scheduler:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: "2"
+      memory: 5Gi
+  logGroomerSidecar:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 384Mi
+
+# Logs de las tareas en un PVC (el scheduler queda como StatefulSet). fixPermissions es necesario en kind.
+workers:
+  persistence:
+    enabled: true
+    size: 5Gi
+    fixPermissions: true
+
+webserver:
+  replicas: 1
+  defaultUser:
+    enabled: false   # el usuario admin se crea con scripts/crear-usuario-airflow.sh (sin contraseña en Git)
+  resources:
+    requests:
+      cpu: 250m
+      memory: 768Mi
+    limits:
+      cpu: "1"
+      memory: 1536Mi
+
+# La migración de la base corre como hook de Argo CD en cada sincronización (es idempotente).
+migrateDatabaseJob:
+  useHelmHooks: false
+  applyCustomEnv: false
+  jobAnnotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi

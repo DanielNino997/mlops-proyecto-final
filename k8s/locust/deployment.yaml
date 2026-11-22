@@ -1,0 +1,44 @@
+# Locust: prueba de carga contra la API de inferencia (RF10). La UI (puerto 8089) controla usuarios y ritmo.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: locust
+  labels:
+    app: locust
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: locust
+  template:
+    metadata:
+      labels:
+        app: locust
+    spec:
+      containers:
+        - name: locust
+          image: dnino97/mlops-pf-locust:9afa0437ada64e4fc3f0a45891af4fcbb4b99588
+          ports:
+            - name: web
+              containerPort: 8089
+          env:
+            - name: LOCUST_HOST
+              value: http://api:8000
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8089
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 8089
+            initialDelaySeconds: 20
+            periodSeconds: 20

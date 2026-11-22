@@ -1,0 +1,28 @@
+# Airflow: el chart oficial (repositorio de Helm de Apache) + los values versionados en este repo.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: airflow
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  sources:
+    - repoURL: https://airflow.apache.org
+      chart: airflow
+      targetRevision: 1.16.0
+      helm:
+        releaseName: airflow
+        valueFiles:
+          - $values/k8s/airflow/values.yaml
+    - repoURL: https://github.com/DanielNino997/mlops-proyecto-final.git
+      targetRevision: a1-plataforma-base
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: mlops
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

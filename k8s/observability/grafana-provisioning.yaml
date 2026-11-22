@@ -1,0 +1,32 @@
+# Grafana se configura sola al arrancar: datasource de Prometheus y el dashboard de la API, todo desde Git.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasources
+data:
+  prometheus.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        uid: prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus:9090
+        isDefault: true
+        jsonData:
+          timeInterval: 5s
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-provider
+data:
+  provider.yaml: |
+    apiVersion: 1
+    providers:
+      - name: mlops
+        folder: MLOps
+        type: file
+        disableDeletion: true
+        options:
+          path: /var/lib/grafana/dashboards

@@ -1,0 +1,42 @@
+# API de datos del curso (imagen del docente). Entrega un lote por petición: GET /data?group_number=N.
+# Guarda en memoria el último lote entregado: si el pod se reinicia vuelve al lote 0
+# (el DAG no reprocesa lotes repetidos: llave única group_number + batch_number en RAW).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-api
+  labels:
+    app: data-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: data-api
+  template:
+    metadata:
+      labels:
+        app: data-api
+    spec:
+      containers:
+        - name: data-api
+          image: cristiandiaz13/mlops-puj:data-api-pf-v2
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 2Gi
+          readinessProbe:
+            httpGet:
+              path: /docs
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 20

@@ -1,0 +1,8 @@
+# Clúster local de un solo nodo para el proyecto final.
+# Se crea una vez con: kind create cluster --config k8s/cluster/kind.yaml
+# Los servicios se exponen con kubectl port-forward + túnel SSH (la VM solo deja entrar SSH).
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: mlops
+nodes:
+  - role: control-plane

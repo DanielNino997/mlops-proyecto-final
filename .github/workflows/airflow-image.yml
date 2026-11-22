@@ -1,13 +1,22 @@
 name: Imagen Airflow
 
+# Prueba lib/, construye la imagen de Airflow (con GIT_SHA), la publica con el SHA del commit y
+# actualiza ese tag en k8s/airflow/values.yaml (misma rama). Argo CD ve el commit y redespliega.
 on:
   push:
-    branches: [main]
     paths: ["airflow/**", ".github/workflows/airflow-image.yml"]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 env:
   IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/mlops-pf-airflow
+  VALUES: k8s/airflow/values.yaml
 
 jobs:
   build-push:
@@ -33,6 +42,26 @@ jobs:
         with:
           context: airflow
           push: true
+          build-args: |
+            GIT_SHA=${{ github.sha }}
           tags: |
             ${{ env.IMAGE }}:${{ github.sha }}
             ${{ env.IMAGE }}:latest
+
+  bump-manifest:
+    needs: build-push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Actualizar el tag de la imagen en los values de Airflow
+        run: |
+          sed -i -E "s#^(\s*tag: )\"[^\"]*\"(\s*\# bump:airflow.*)#\1\"${GITHUB_SHA}\"\2#" "$VALUES"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$VALUES"
+          if git diff --cached --quiet; then echo "Sin cambios"; exit 0; fi
+          git commit -m "deploy(airflow): imagen ${GITHUB_SHA::7}"
+          for i in 1 2 3; do git pull --rebase && git push && break; sleep 5; done
