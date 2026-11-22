@@ -38,4 +38,19 @@ secret minio-credentials \
 secret api-admin \
   --from-literal=ADMIN_TOKEN="$API_ADMIN_TOKEN"
 
+
+secret airflow-db-credentials \
+  --from-literal=POSTGRES_USER="$AIRFLOW_DB_USER" \
+  --from-literal=POSTGRES_PASSWORD="$AIRFLOW_DB_PASSWORD" \
+  --from-literal=POSTGRES_DB=airflow
+
+secret airflow-metadata \
+  --from-literal=connection="postgresql://$AIRFLOW_DB_USER:$AIRFLOW_DB_PASSWORD@postgres-airflow:5432/airflow"
+
+secret airflow-fernet-key \
+  --from-literal=fernet-key="$AIRFLOW_FERNET_KEY"
+
+secret airflow-webserver-secret \
+  --from-literal=webserver-secret-key="$AIRFLOW_WEBSERVER_SECRET_KEY"
+
 echo "Secrets en $NS:"; kubectl -n "$NS" get secrets
