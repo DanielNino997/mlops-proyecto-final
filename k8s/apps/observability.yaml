@@ -9,7 +9,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/DanielNino997/mlops-proyecto-final.git
-    targetRevision: a1-plataforma-base
+    targetRevision: main
     path: k8s/observability
   destination:
     server: https://kubernetes.default.svc
