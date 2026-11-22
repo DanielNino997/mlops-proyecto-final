@@ -53,4 +53,8 @@ secret airflow-fernet-key \
 secret airflow-webserver-secret \
   --from-literal=webserver-secret-key="$AIRFLOW_WEBSERVER_SECRET_KEY"
 
+
+secret grafana-admin \
+  --from-literal=GF_SECURITY_ADMIN_PASSWORD="$GRAFANA_ADMIN_PASSWORD"
+
 echo "Secrets en $NS:"; kubectl -n "$NS" get secrets
