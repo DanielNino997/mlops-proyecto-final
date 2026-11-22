@@ -91,10 +91,10 @@ scheduler:
     resources:
       requests:
         cpu: 10m
-        memory: 32Mi
+        memory: 64Mi
       limits:
         cpu: 100m
-        memory: 128Mi
+        memory: 384Mi
 
 # Logs de las tareas en un PVC (el scheduler queda como StatefulSet). fixPermissions es necesario en kind.
 workers:
