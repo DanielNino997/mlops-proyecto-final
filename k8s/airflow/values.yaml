@@ -8,7 +8,7 @@ airflowVersion: "2.10.5"
 images:
   airflow:
     repository: dnino97/mlops-pf-airflow
-    tag: "pendiente" # bump:airflow (lo actualiza el workflow airflow-image.yml)
+    tag: "8d3efe1a794e4db2b37658664f0a6c4df72eac39" # bump:airflow (lo actualiza el workflow airflow-image.yml)
     pullPolicy: IfNotPresent
 
 # Base de metadatos propia (postgres-airflow), no la Postgres embebida del chart.
