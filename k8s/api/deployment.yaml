@@ -1,0 +1,66 @@
+# API de inferencia (FastAPI). Carga el modelo con alias champion desde MLflow y lo recarga sola
+# (sondeo cada 30 s o POST /admin/reload con token), sin redesplegar. Registra cada inferencia en raw_data.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  labels:
+    app: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: /metrics
+    spec:
+      containers:
+        - name: api
+          image: dnino97/mlops-pf-api:pendiente
+          ports:
+            - name: http
+              containerPort: 8000
+          env:
+            - name: MLFLOW_TRACKING_URI
+              value: http://mlflow:5000
+            - name: MODEL_NAME
+              value: house-price-model
+            - name: MODEL_ALIAS
+              value: champion
+            - name: RELOAD_INTERVAL_SECONDS
+              value: "30"
+            - name: RAW_DB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: data-db-credentials
+                  key: RAW_DB_URL
+            - name: ADMIN_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: api-admin
+                  key: ADMIN_TOKEN
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /live
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 20

@@ -1,0 +1,52 @@
+# Interfaz de usuario: inferencia (consume la API) e historial de lotes (lee clean_data.audit.batch_history).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: streamlit
+  labels:
+    app: streamlit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: streamlit
+  template:
+    metadata:
+      labels:
+        app: streamlit
+    spec:
+      containers:
+        - name: streamlit
+          image: dnino97/mlops-pf-streamlit:pendiente
+          ports:
+            - name: http
+              containerPort: 8501
+          env:
+            - name: API_URL
+              value: http://api:8000
+            - name: MLFLOW_UI_URL
+              value: http://localhost:5000
+            - name: CLEAN_DB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: data-db-credentials
+                  key: CLEAN_DB_URL
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 768Mi
+          readinessProbe:
+            httpGet:
+              path: /_stcore/health
+              port: 8501
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /_stcore/health
+              port: 8501
+            initialDelaySeconds: 30
+            periodSeconds: 20
