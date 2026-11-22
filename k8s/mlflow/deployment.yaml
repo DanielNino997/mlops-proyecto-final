@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: mlflow
-          image: dnino97/mlops-pf-mlflow:2ab8d626ed43839de98830177f2df8d86cb599f0
+          image: dnino97/mlops-pf-mlflow:9afa0437ada64e4fc3f0a45891af4fcbb4b99588
           command: ["mlflow", "server"]
           args:
             - --host=0.0.0.0
