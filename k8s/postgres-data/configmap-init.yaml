@@ -1,0 +1,9 @@
+# Script que Postgres ejecuta solo la primera vez (volumen vacío): crea las dos bases separadas.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-data-init
+data:
+  init.sql: |
+    CREATE DATABASE raw_data;
+    CREATE DATABASE clean_data;

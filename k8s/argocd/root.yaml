@@ -1,0 +1,20 @@
+# App-of-apps: la única Application que se aplica a mano (una vez).
+# Lee k8s/apps/ y crea una Application por componente; desde ahí todo lo sincroniza Argo CD.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/DanielNino997/mlops-proyecto-final.git
+    targetRevision: a1-plataforma-base
+    path: k8s/apps
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
