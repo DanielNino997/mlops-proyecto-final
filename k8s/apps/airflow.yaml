@@ -17,7 +17,7 @@ spec:
         valueFiles:
           - $values/k8s/airflow/values.yaml
     - repoURL: https://github.com/DanielNino997/mlops-proyecto-final.git
-      targetRevision: a1-plataforma-base
+      targetRevision: main
       ref: values
   destination:
     server: https://kubernetes.default.svc
