@@ -2,7 +2,7 @@
 
 Pontificia Universidad Javeriana · Operación de Aprendizaje de Máquinas · Nivel 4
 **Equipo:** Daniel Niño (carril B: datos, ML y aplicación) · Ana María Merchán (carril A: infraestructura y plataforma)
-**Video de sustentación:** _[enlace de YouTube]_
+**Video de sustentación:** _https://youtu.be/hXvln2quCBE_
 
 Un sistema MLOps que consume lotes de datos inmobiliarios uno por uno. En cada lote decide **si reentrenar**, y
 promueve el modelo nuevo **solo si le gana al que está en producción**. La API de inferencia toma siempre el modelo
