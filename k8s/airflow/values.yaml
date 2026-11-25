@@ -36,7 +36,7 @@ env:
   - name: MLFLOW_TRACKING_URI
     value: http://mlflow:5000
   - name: DATA_API_URL
-    value: http://10.43.97.110:8000   # API del docente (corrida real). La del clúster: http://data-api
+    value: http://data-api   # API de datos del clúster (imagen data-api-pf-v2, grupo 2)
   - name: GROUP_NUMBER
     value: "2"
   - name: MODEL_NAME
